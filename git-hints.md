@@ -1,5 +1,24 @@
 # Git Cheatsheet
 
+## Committing changes
+
+* save file working on
+* add the file of what the changes were on
+```bash
+# add specific file with filename
+git add filename
+
+# add all files
+git add .
+```
+* Make a comment on what has been changed
+```bash
+git commit -m "comment of whats changed"
+```
+* push changes
+```bash
+git push 
+```
 ## git clone
  1. In Github click the code button and copy either the https or SSH link
 2. Go to terminal, in file location where project will reside
