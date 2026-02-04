@@ -1,8 +1,8 @@
 # Hooked Product Requirement Docs
 [Reference for PRD creation](https://www.atlassian.com/agile/product-management/requirements)
 
-Group Members: Calista Ruiz, Ngoc Le, Haylie Boscia
-Status: ==Planning==
+* Group Members: Calista Ruiz, Ngoc Le, Haylie Boscia
+* Status: Planning Mode
 
 ## Objective
 Create a relaxing 2D fishing game that incorporates fishing mechanics, upgrades, fish rarity, a shop, biomes, and an aquarium
