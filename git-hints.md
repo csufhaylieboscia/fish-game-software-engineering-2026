@@ -61,4 +61,4 @@ ls -la
 ```bash
 cat id_ed25519.pub
 ```
-* Travel to your git hub settings >SSH and GPG keys > New SSH key > and paste your key and give it a name > add SSH key
+* Travel to your git hub settings > SSH and GPG keys > New SSH key > and paste your key and give it a name > add SSH key
