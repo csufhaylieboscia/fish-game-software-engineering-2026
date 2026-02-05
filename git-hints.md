@@ -3,6 +3,10 @@
 ## Committing changes
 
 * save file working on
+* pull changes if others are currently working
+```bash
+git pull
+```
 * add the file of what the changes were on
 ```bash
 # add specific file with filename
