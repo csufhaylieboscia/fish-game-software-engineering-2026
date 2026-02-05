@@ -57,7 +57,7 @@ ls -la
 ```
 * you should have see `id_ed25519` and `id_ed25519.pub`
 * DO NOT share `id_ed25519` this is your personal key
-* Print out `id_ed25519.pub` your public key to copy and place in github
+* Print out `id_ed25519.pub` your public key to copy and place in github, Copy the whole line that is printed out
 ```bash
 cat id_ed25519.pub
 ```
