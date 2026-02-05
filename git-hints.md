@@ -42,3 +42,23 @@ Verify Config
 ```bash
 git config --list
 ```
+
+## Creating an SSH key for password-less 
+
+* travel down to your computers home directory and generate a new key with you github email
+```bash
+ssh-kegen -t ed25519 -c "yourgithubemail@git.com"
+```
+* It will prompt you, just hit enter
+* Travel into the .shh directory to find your newly created keys and also view them
+```bash
+cd .shh
+ls -la
+```
+* you should have see `id_ed25519` and `id_ed25519.pub`
+* DO NOT share `id_ed25519` this is your personal key
+* Print out `id_ed25519.pub` your public key to copy and place in github
+```bash
+cat id_ed25519.pub
+```
+* Travel to your git hub settings >SSH and GPG keys > New SSH key > and paste your key and give it a name > add SSH key
