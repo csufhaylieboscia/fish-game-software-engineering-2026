@@ -2,17 +2,20 @@ from time import sleep
 import pygame
 import pygame_menu
 from pygame_menu import themes
+
+from MainGame import mainScene
  
 pygame.init()
 surface = pygame.display.set_mode((1000, 600))
- 
+pygame.display.set_caption("FishGameStart!")
+
 def set_difficulty(value, difficulty):
     print(value)
     print(difficulty)
  
 def start_the_game():
-    mainmenu._open(loading)
-    pygame.time.set_timer(update_loading, 30)
+    mainScene()
+    #pygame.time.set_timer(update_loading, 30)
  
 def level_menu():
     mainmenu._open(level)
