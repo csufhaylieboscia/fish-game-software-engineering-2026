@@ -1,5 +1,5 @@
 import pygame
-import pytmx
+import pytmx # type: ignore
 import os
 
 
