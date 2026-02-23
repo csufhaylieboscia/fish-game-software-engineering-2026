@@ -4,10 +4,8 @@ import os
 
 
 TILE_SIZE = 16      # Each tile in the PNG is 16×16 pixels
-SCALE = 4           # Scale up 4x
+SCALE = 3           # Scale up 3x
 TILE_DRAW = TILE_SIZE * SCALE   # 48 pixels per tile on screen
-
-FULLSCREEN = False    # Need to fix mouse position when in fullscreen mode
 
 class TileMap:
     """
@@ -148,12 +146,6 @@ def game_screen(screen):
 
 if __name__ == "__main__":
     pygame.init()
-
-    if FULLSCREEN:
-        screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-    else:
-        screen = pygame.display.set_mode((800, 600))
-
     pygame.display.set_caption("Game Screen Test – ESC to quit")
     game_screen(screen)
     pygame.quit()

@@ -12,7 +12,7 @@ class GameState(Enum):
     FISHING    = 2
     # add more as we continue building out the game (e.g. INVENTORY, CRAFTING, etc)
 
-FULLSCREEN = False   # I dont think we'll need this since i have it in game_screen
+FULLSCREEN = True   # switch depending on whether you're testing or want to play in fullscreen
 
 # orchestrates the different screens and game states
 def main():
@@ -20,7 +20,7 @@ def main():
 
     # Set up the screen
     if FULLSCREEN:
-        screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        screen = pygame.display.set_mode((1200, 800))
     else:
         screen = pygame.display.set_mode((800, 600))
 
@@ -40,7 +40,7 @@ def main():
             # game_screen() returns MAIN_MENU when ESC is pressed,
             # or FISHING when the player triggers a fishing spot
             state = game_screen(screen)
-            
+
         # Add more elif blocks here as you add screens
 
     pygame.quit()
