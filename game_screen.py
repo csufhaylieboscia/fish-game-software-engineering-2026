@@ -4,7 +4,7 @@ import os
 
 
 TILE_SIZE = 16      # Each tile in the PNG is 16×16 pixels
-SCALE = 3           # Scale up 3× so each tile is 48×48 on screen
+SCALE = 4           # Scale up 4x
 TILE_DRAW = TILE_SIZE * SCALE   # 48 pixels per tile on screen
 
 FULLSCREEN = False    # Need to fix mouse position when in fullscreen mode
