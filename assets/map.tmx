@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="1">
  <tileset firstgid="1" name="Hooked_MBackground" tilewidth="16" tileheight="16" tilecount="6400" columns="80">
-  <image source="../../assets/BETA Sunnyside World - Tileset_GameMaker/Sunnyside World - Tileset/tilesets/tileset_sunnysideworld/output_tileset.png" width="1280" height="1280"/>
+  <image source="output_tileset.png" width="1280" height="1280"/>
  </tileset>
  <layer id="1" name="Grass/Water" width="30" height="30">
   <data encoding="csv">
