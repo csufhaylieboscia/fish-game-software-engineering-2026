@@ -9,7 +9,7 @@ DockBrown = (193, 154, 107)
 Purple = (160, 32, 240)
 all_sprites_list = pygame.sprite.Group()
 
-def mainScene():
+def mainScene(surface):
 
     #intialize Sprite
     player = Sprite(Purple, 40, 30)
@@ -39,3 +39,10 @@ def mainScene():
 
         pygame.display.update()
 
+if __name__ == "__main__":
+    pygame.init()
+
+    screen = pygame.display.set_mode((800, 600))
+    pygame.display.set_caption("Rytthym Test – ESC to quit")
+    mainScene(screen)
+    pygame.quit()
