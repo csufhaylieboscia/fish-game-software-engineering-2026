@@ -93,34 +93,32 @@ class GameState(Enum):
    START = 1
 
 
-def main():
-   pygame.init()
-
-
-   screen = pygame.display.set_mode((800, 600))
-
+def main(screen=None):
+    if screen is None:
+        pygame.init()
+        screen = pygame.display.set_mode((800, 600))
 
    # try to load background image (optional). If missing, we'll use solid color.
-   background = None
-   asset_path = os.path.join(os.path.dirname(__file__), "assets", "4-Free-Seamless-Nature-Pixel-Backgrounds4-1536x1024.png")
-   if os.path.exists(asset_path):
+    background = None
+    asset_path = os.path.join(os.path.dirname(__file__), "assets", "4-Free-Seamless-Nature-Pixel-Backgrounds4-1536x1024.png")
+    if os.path.exists(asset_path):
        try:
            background = pygame.image.load(asset_path).convert_alpha()
            background = pygame.transform.scale(background, screen.get_size())
        except Exception as e:
            print(f"Failed to load background image '{asset_path}': {e}")
            background = None
-   else:
+    else:
        print(f"Background image not found at: {asset_path}")
 
 
    # create UI elements
-   def start_action():
+    def start_action():
        print("Start button pressed")
        game_screen(screen)
 
 
-   start_btn = UIElement(
+    start_btn = UIElement(
        center_position=(400, 300),
        font_size=30,
        bg_rgb=BLUE,
@@ -130,7 +128,7 @@ def main():
    )
 
 
-   quit_btn = UIElement(
+    quit_btn = UIElement(
        center_position=(400, 400),
        font_size=30,
        bg_rgb=BLUE,
@@ -141,10 +139,10 @@ def main():
 
 
    # main loop
-   buttons = [start_btn, quit_btn]
+    buttons = [start_btn, quit_btn]
 
 
-   while True:
+    while True:
        mouse_up = False
        for event in pygame.event.get():
            if event.type == pygame.QUIT:
