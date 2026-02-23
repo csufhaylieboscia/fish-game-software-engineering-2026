@@ -3,6 +3,7 @@ import pygame.freetype
 from pygame.sprite import Sprite
 from enum   import Enum
 import os
+from game_screen import game_screen
 
 
 BLUE = (106, 159, 181)
@@ -116,6 +117,7 @@ def main():
    # create UI elements
    def start_action():
        print("Start button pressed")
+       game_screen(screen)
 
 
    start_btn = UIElement(
