@@ -2,6 +2,8 @@ import pygame
 import pytmx # type: ignore
 import os
 
+from SpriteClass import Sprite
+
 
 TILE_SIZE = 16      # Each tile in the PNG is 16×16 pixels
 SCALE = 3           # Scale up 3x
@@ -97,7 +99,7 @@ def game_screen(screen):
     screen_h = screen.get_height()
 
     here = os.path.dirname(os.path.abspath(__file__))
-    map_path = os.path.join(here, "assets", "map.tmx")
+    map_path = os.path.join(here, "assets", "InGameBG", "map.tmx")
 
     if not os.path.exists(map_path):
         print(f"ERROR: Could not find map.tmx at {map_path}")
@@ -136,10 +138,12 @@ def game_screen(screen):
         screen.fill((30, 30, 30))
         tilemap.draw(screen, camera.x, camera.y)
 
-        pygame.draw.circle(screen, (255, 80, 80), (screen_w // 2, screen_h // 2), 8)
-
-        # TODO: replace dot with player sprite, add HUD on top
-
+        # Character sprite
+        player = Sprite(x=tilemap.pixel_width // 2, y=tilemap.pixel_height // 2)
+        keys = pygame.key.get_pressed()
+        player.update(keys)
+        screen.blit(player.image, (screen_w // 2 - player.rect.width // 2,
+                                   screen_h // 2 - player.rect.height // 2))
         pygame.display.flip()
         clock.tick(60)
 
