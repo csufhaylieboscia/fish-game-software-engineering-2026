@@ -1,41 +1,50 @@
 import pygame
-from SpriteClass import Sprite
-from rythym import rythymGameStart
+from enum import Enum
 
-# Global Variables
-surface = pygame.display.set_mode((1000, 600))
-Auqua = (0,255,225)
-DockBrown = (193, 154, 107)
-Purple = (160, 32, 240)
-all_sprites_list = pygame.sprite.Group()
+# Add each feature/file we contribute here so main() can call them
+from main_menu import main as main_menu     # shows the start/quit menu
+from game_screen import game_screen     # the main overworld map
 
-def mainScene():
+class GameState(Enum):
+    QUIT       = -1
+    MAIN_MENU  = 0
+    PLAYING    = 1
+    FISHING    = 2
+    # add more as we continue building out the game (e.g. INVENTORY, CRAFTING, etc)
 
-    #intialize Sprite
-    player = Sprite(Purple, 40, 30)
-    player.rect.x = 600
-    player.rect.y = 500
+FULLSCREEN = False   # switch depending on whether you're testing or want to play in fullscreen
 
-    all_sprites_list.add(player)
+# orchestrates the different screens and game states
+def main():
+    pygame.init()
 
-    run = True
-    while run:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-                pygame.quit()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    print("Space was pressed!")
-                    rythymGameStart()
-                    # handle space press
-            
+    # Set up the screen
+    if FULLSCREEN:
+        screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
+    else:
+        screen = pygame.display.set_mode((800, 600))
 
-        all_sprites_list.update()
-        surface.fill(Auqua)
-        pygame.draw.rect(surface, DockBrown, pygame.Rect(100, 400, 1500, 1000))
-        all_sprites_list.draw(surface)
-        pygame.display.flip()
+    pygame.display.set_caption("Fish Game")
 
-        pygame.display.update()
+    # Start at the main menu
+    state = GameState.MAIN_MENU
 
+    # Main game loop: keep running until the state changes to QUIT
+    while state != GameState.QUIT:
+
+        if state == GameState.MAIN_MENU:
+            # main_menu() returns PLAYING when Start is clicked, QUIT when Quit
+            state = main_menu(screen)
+
+        elif state == GameState.PLAYING:
+            # game_screen() returns MAIN_MENU when ESC is pressed,
+            # or FISHING when the player triggers a fishing spot
+            state = game_screen(screen)
+
+        # Add more elif blocks here as you add screens
+
+    pygame.quit()
+
+
+if __name__ == "__main__":
+    main()
