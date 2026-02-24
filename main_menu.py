@@ -1,5 +1,4 @@
 import pygame
-import time
 import pygame.freetype
 from pygame.sprite import Sprite
 from enum   import Enum
@@ -149,7 +148,6 @@ class GameState(Enum):
    START = 1
 
 
-<<<<<<< HEAD:main-menu.py
 def main():
     pygame.init()
 
@@ -225,86 +223,6 @@ def main():
 ####  Music playback code  ####
 # 1. Initialize the mixer
 pygame.mixer.init()
-=======
-def main(screen=None):
-    if screen is None:
-        pygame.init()
-        screen = pygame.display.set_mode((800, 600))
-
-   # try to load background image (optional). If missing, we'll use solid color.
-    background = None
-    asset_path = os.path.join(os.path.dirname(__file__), "assets", "4-Free-Seamless-Nature-Pixel-Backgrounds4-1536x1024.png")
-    if os.path.exists(asset_path):
-       try:
-           background = pygame.image.load(asset_path).convert_alpha()
-           background = pygame.transform.scale(background, screen.get_size())
-       except Exception as e:
-           print(f"Failed to load background image '{asset_path}': {e}")
-           background = None
-    else:
-       print(f"Background image not found at: {asset_path}")
-
-
-   # create UI elements
-    def start_action():
-       print("Start button pressed")
-       game_screen(screen)
-
-
-    start_btn = UIElement(
-       center_position=(400, 300),
-       font_size=30,
-       bg_rgb=BLUE,
-       text_rgb=WHITE,
-       text="Start",
-       action=start_action,
-   )
-
-
-    quit_btn = UIElement(
-       center_position=(400, 400),
-       font_size=30,
-       bg_rgb=BLUE,
-       text_rgb=WHITE,
-       text="Quit",
-       action=GameState.QUIT,
-   )
-
-
-   # main loop
-    buttons = [start_btn, quit_btn]
-
-
-    while True:
-       mouse_up = False
-       for event in pygame.event.get():
-           if event.type == pygame.QUIT:
-               pygame.quit()
-           if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-               mouse_up = True
-
-
-       if background:
-           screen.blit(background, (0, 0))
-       else:
-           screen.fill(BLUE)
-
-
-       mouse_pos = pygame.mouse.get_pos()
-       for btn in buttons:
-           action = btn.update(mouse_pos, mouse_up)
-           if action is not None:
-               if action == GameState.QUIT:
-                   pygame.quit()
-               if callable(action):
-                   action()
-       for btn in buttons:
-           btn.draw(screen)
-
-
-       pygame.display.flip()
-
->>>>>>> 80a238d114a420beee64f4ba1f62cb9598bd9ad9:main_menu.py
 
 # 2. Load the OGG file
 music_file_path = os.path.join(Music_Dir, "Main-menu.ogg")
