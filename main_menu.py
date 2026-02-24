@@ -146,8 +146,7 @@ def main(screen=None):
        mouse_up = False
        for event in pygame.event.get():
            if event.type == pygame.QUIT:
-               pygame.quit()
-               return
+               return GameState.QUIT
            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                mouse_up = True
 
@@ -163,8 +162,7 @@ def main(screen=None):
            action = btn.update(mouse_pos, mouse_up)
            if action is not None:
                if action == GameState.QUIT:
-                   pygame.quit()
-                   return
+                   return GameState.QUIT
                if callable(action):
                    action()
        for btn in buttons:
