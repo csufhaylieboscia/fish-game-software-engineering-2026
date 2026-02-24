@@ -146,6 +146,3 @@ def game_screen(screen):
 
 if __name__ == "__main__":
     pygame.init()
-    pygame.display.set_caption("Game Screen Test – ESC to quit")
-    game_screen(screen)
-    pygame.quit()
