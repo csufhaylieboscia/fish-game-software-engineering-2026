@@ -3,6 +3,7 @@ import pytmx # type: ignore
 import os
 
 from player import Player
+from ui import UIElement, create_surface_with_text
 
 # for testing purposes
 from rythym import rythymGameStart
@@ -99,13 +100,82 @@ def get_collision_rects(tmx_data, layer_name="collision"):
                 ))
     return rects
 
+def settings_menu(screen, clock):
+
+    # build buttons and offsets; volume is manipulated directly via mixer
+    screen_w, screen_h = screen.get_size()
+    resume_btn = UIElement((screen_w//2, screen_h//2 - 60), "Resume", 30, (50,50,50), (255,255,255), action="resume")
+    menu_btn   = UIElement((screen_w//2, screen_h//2),       "Main Menu", 30, (50,50,50), (255,255,255), action="main_menu")
+    quit_btn   = UIElement((screen_w//2, screen_h//2 + 60),  "Quit", 30, (50,50,50), (255,255,255), action="quit")
+    vol_up     = UIElement((screen_w//2 + 100, screen_h//2 - 120), "+", 40, (50,50,50), (255,255,255), action="vol_up")
+    vol_down   = UIElement((screen_w//2 - 100, screen_h//2 - 120), "-", 40, (50,50,50), (255,255,255), action="vol_down")
+
+    buttons = [resume_btn, menu_btn, quit_btn, vol_up, vol_down]
+    offsets = [-60, 0, 60, -120 + 0, -120 + 0]  # y offsets for centering later
+
+    while True:
+        dt = clock.tick(60) / 1000.0
+        mouse_up = False
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return "quit"
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                mouse_up = True
+            if event.type == pygame.KEYDOWN:
+                # pressing P or ESC here resumes
+                if event.key in (pygame.K_p, pygame.K_ESCAPE):
+                    return None
+
+        # Update button centers in case window changed
+        screen_w, screen_h = screen.get_size()
+        resume_btn.set_center((screen_w//2, screen_h//2 - 60))
+        menu_btn.set_center((screen_w//2, screen_h//2))
+        quit_btn.set_center((screen_w//2, screen_h//2 + 60))
+        vol_up.set_center((screen_w//2 + 100, screen_h//2 - 120))
+        vol_down.set_center((screen_w//2 - 100, screen_h//2 - 120))
+
+        # draw translucent background
+        overlay = pygame.Surface((screen_w, screen_h), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 150))
+        screen.blit(overlay, (0, 0))
+
+        for btn in buttons:
+            action = btn.update(pygame.mouse.get_pos(), mouse_up)
+            if action == "resume":
+                return None
+            if action == "main_menu":
+                return "main_menu"
+            if action == "quit":
+                return "quit"
+            if action == "vol_up":
+                newv = min(1.0, pygame.mixer.music.get_volume() + 0.1)
+                pygame.mixer.music.set_volume(newv)
+            if action == "vol_down":
+                newv = max(0.0, pygame.mixer.music.get_volume() - 0.1)
+                pygame.mixer.music.set_volume(newv)
+
+        for btn in buttons:
+            btn.draw(screen)
+
+        # display current volume
+        vol_text = create_surface_with_text(f"Volume: {pygame.mixer.music.get_volume():.1f}", 24, (255,255,255), (0,0,0))
+        screen.blit(vol_text, (10, 10))
+
+        pygame.display.flip()
+
+
 def gameLoop(screen):
     """
     The main in-game screen. Called from main-menu.py when Start is clicked.
-    Press ESC to return to the main menu.
+    Key controls:
+      * ESC  - toggle fullscreen / resolution
+      * P    - open in-game settings (pause)
     """
 
     clock    = pygame.time.Clock()
+    # initial values; these may change if the window is resized or toggled to
+    # fullscreen, so we refresh them inside the game loop below.
     screen_w = screen.get_width()
     screen_h = screen.get_height()
 
@@ -153,19 +223,34 @@ def gameLoop(screen):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.mixer.music.stop()
-                pygame.quit()
-                return
+                return "quit"
+
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    pygame.mixer.music.stop()
-                    return "menu"
+                # check for settings overlay first
+                if event.key == pygame.K_p:
+                    result = settings_menu(screen, clock)
+                    if result == "main_menu":
+                        pygame.mixer.music.stop()
+                        return "menu"
+                    if result == "quit":
+                        # stop any playing music then bubble up quit request
+                        pygame.mixer.music.stop()
+                        return "quit"
+                    # otherwise resume the game
+
+                # ESC toggles fullscreen/resolution now
+                elif event.key == pygame.K_ESCAPE:
+                    pygame.display.toggle_fullscreen()
 
             # for testing        
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     rythymGameStart()
 
-        # save position so we cna roll back if we collide with a wall
+        # window size might have changed (fullscreen toggle) so update
+        screen_w, screen_h = screen.get_size()
+
+        # save position so we can roll back if we collide with a wall
         old_x, old_y = player_x, player_y
 
         keys = pygame.key.get_pressed()
@@ -200,6 +285,7 @@ def gameLoop(screen):
 
         keys = pygame.key.get_pressed()
         player.update(keys)
+        # draw player in centre of current window size
         screen.blit(player.image, (screen_w // 2 - player.rect.width // 2,
                                    screen_h // 2 - player.rect.height // 2))
         pygame.display.flip()

@@ -1,9 +1,8 @@
 import pygame
-import pygame.freetype
-from pygame.sprite import Sprite
-from enum   import Enum
+from enum import Enum
 import os
 from game import gameLoop
+from ui import create_surface_with_text, UIElement
 
 
 Base_Dir = os.path.dirname(os.path.abspath(__file__))
@@ -14,81 +13,13 @@ Music_Dir = os.path.join(Assets_Dir, "MUSIC")
 BLUE = (106, 159, 181)
 WHITE = (255, 255, 255)
 
+def set_center(self, center_position):
+       """Re-centre the UI element when the window size changes.
 
-def create_surface_with_text(text, font_size, text_rgb, bg_rgb):
-   """ Returns surface with text written on """
-   font = pygame.freetype.SysFont("Courier", font_size, bold=True)
-   surface, _ = font.render(text=text, fgcolor=text_rgb, bgcolor=bg_rgb)
-   return surface.convert_alpha()
-
-
-class UIElement(Sprite):
-   """ An user interface element that can be added to a surface """
-
-
-   def __init__(self, center_position, text, font_size, bg_rgb, text_rgb, action=None):
+       This updates both the normal and highlighted rects so that the
+       button stays aligned after toggling fullscreen or resizing.
        """
-       Args:
-           center_position - tuple (x, y)
-           text - string of text to write
-           font_size - int
-           bg_rgb (background colour) - tuple (r, g, b)
-           text_rgb (text colour) - tuple (r, g, b)
-       """
-       self.mouse_over = False  # indicates if the mouse is over the element
-
-
-       # create the default image
-       default_image = create_surface_with_text(
-           text=text, font_size=font_size, text_rgb=text_rgb, bg_rgb=bg_rgb
-       )
-
-
-       # create the image that shows when mouse is over the element
-       highlighted_image = create_surface_with_text(
-           text=text, font_size=int(font_size * 1.2), text_rgb=text_rgb, bg_rgb=bg_rgb
-       )
-
-
-       # add both images and their rects to lists
-       self.images = [default_image, highlighted_image]
-       self.rects = [
-           default_image.get_rect(center=center_position),
-           highlighted_image.get_rect(center=center_position),
-       ]
-
-
-       # calls the init method of the parent sprite class
-       super().__init__()
-
-
-       # store optional action callable
-       self.action = action
-
-
-       # properties that vary the image and its rect when the mouse is over the element
-   @property
-   def image(self):
-       return self.images[1] if self.mouse_over else self.images[0]
-
-
-   @property
-   def rect(self):
-       return self.rects[1] if self.mouse_over else self.rects[0]
-
-
-   def update(self, mouse_pos, mouse_up):
-       if self.rect.collidepoint(mouse_pos):
-           self.mouse_over = True
-           if mouse_up:
-               return self.action
-       else:
-           self.mouse_over = False
-
-
-   def draw(self, surface):
-       """ Draws element onto a surface """
-       surface.blit(self.image, self.rect)
+       self.rects = [img.get_rect(center=center_position) for img in self.images]
 
 
 SCREEN_WIDTH = 800
@@ -100,12 +31,6 @@ SCROLL_SPEED = 200  # pixels per second
 
 
 class ParallaxLayer:
-    """Pygame-based parallax layer.
-
-    The layer loads a single image and tiles it horizontally.  Copies of the
-    image are tracked with ``Rect`` objects; when one moves completely off
-    the left edge it is wrapped to the right of the current rightmost copy.
-    """
 
     def __init__(self, image_path, speed_factor):
         self.speed_factor = speed_factor
@@ -148,7 +73,6 @@ class GameState(Enum):
    START = 1
 
 def main_menu_loop(screen, clock):
-
     pygame.mixer.init() # MOVED THIS - cali
     music_file_path = os.path.join(Music_Dir, "Main-menu.ogg")
     pygame.mixer.init()
@@ -167,13 +91,15 @@ def main_menu_loop(screen, clock):
     def start_action():
         return "game"   # CHANGED - cali
 
+    # initial button positions; will be updated each frame based on
+    # the current window size so that fullscreen keeps them centred.
     start_btn = UIElement(
         center_position=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2),
         font_size=30,
         bg_rgb=BLUE,
         text_rgb=WHITE,
         text="Start",
-        action="game",  # CHANGED - cali
+        action="game",
     )
 
     quit_btn = UIElement(
@@ -182,13 +108,19 @@ def main_menu_loop(screen, clock):
         bg_rgb=BLUE,
         text_rgb=WHITE,
         text="Quit",
-        action="quit",  # CHANGED - cali
+        action="quit",
     )
 
     # main loop
     buttons = [start_btn, quit_btn]
+    offsets = [0, 100]  # vertical offsets from centre for each button
 
     while True:
+        # recalc button centres every iteration in case the window size changed
+        screen_w, screen_h = screen.get_size()
+        for btn, off in zip(buttons, offsets):
+            btn.set_center((screen_w // 2, screen_h // 2 + off))
+
         dt = clock.tick(60) / 1000.0
         mouse_up = False
 
@@ -197,6 +129,10 @@ def main_menu_loop(screen, clock):
                 return "quit"
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 mouse_up = True
+
+            # ESC toggles fullscreen/resolution
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                pygame.display.toggle_fullscreen()
 
         # draw parallax background
         screen.fill((0, 0, 0))
