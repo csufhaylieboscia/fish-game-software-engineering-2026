@@ -5,7 +5,7 @@ import os
 from player import Player
 
 # for testing purposes
-from rythym import rythymGameStart
+from rhythm import rhythmGameStart
 
 TILE_SIZE = 16      # Each tile in the PNG is 16×16 pixels
 SCALE = 3           # Scale up 3x
@@ -163,7 +163,7 @@ def gameLoop(screen):
             # for testing        
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    rythymGameStart()
+                    rhythmGameStart()
 
         # save position so we cna roll back if we collide with a wall
         old_x, old_y = player_x, player_y
