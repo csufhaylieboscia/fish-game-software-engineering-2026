@@ -9,9 +9,9 @@ BLACK = (0, 0, 0)
 surface = pygame.display.set_mode((800, 600))
 allObjectsList = pygame.sprite.Group()
 
-def rythymGameStart():
+def rhythmGameStart():
 
-    initializeRythymBar()
+    initializeRhythmBar()
 
     slider = GameObject(BLACK, 10, 50, 100, 500, 2) 
     allObjectsList.add(slider)
@@ -42,7 +42,7 @@ def rythymGameStart():
         pygame.display.update()
 
         
-def initializeRythymBar():
+def initializeRhythmBar():
     # GameObject(color, width, height, xpos, ypos, speed)
     outsideL = GameObject(NAVY, 300, 25, 50, 510, 0)
     outsideR = GameObject(NAVY, 300, 25, 450, 510, 0)

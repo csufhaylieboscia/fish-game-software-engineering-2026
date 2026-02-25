@@ -2,10 +2,10 @@ import pygame
 import pytmx # type: ignore
 import os
 
-from player import Sprite
+from player import Player
 
 # for testing purposes
-from rythym import rythymGameStart
+from rhythm import rhythmGameStart
 
 TILE_SIZE = 16      # Each tile in the PNG is 16×16 pixels
 SCALE = 3           # Scale up 3x
@@ -99,7 +99,7 @@ def get_collision_rects(tmx_data, layer_name="collision"):
                 ))
     return rects
 
-def game_screen(screen):
+def gameLoop(screen):
     """
     The main in-game screen. Called from main-menu.py when Start is clicked.
     Press ESC to return to the main menu.
@@ -147,7 +147,7 @@ def game_screen(screen):
     player_speed = 4
 
     running = True
-    player = Sprite(x=tilemap.pixel_width // 2, y=tilemap.pixel_height // 2)
+    player = Player(x=tilemap.pixel_width // 2, y=tilemap.pixel_height // 2)
     
     while running:
         for event in pygame.event.get():
@@ -163,7 +163,7 @@ def game_screen(screen):
             # for testing        
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    rythymGameStart()
+                    rhythmGameStart()
 
         # save position so we cna roll back if we collide with a wall
         old_x, old_y = player_x, player_y
