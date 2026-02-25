@@ -100,7 +100,25 @@ def game_screen(screen):
     screen_w = screen.get_width()
     screen_h = screen.get_height()
 
+    # base directory for file paths in this module
     here = os.path.dirname(os.path.abspath(__file__))
+
+    # -- background music -------------------------------------------------
+    # initialize the mixer if it hasn't been already, then load & play
+    try:
+        if not pygame.mixer.get_init():
+            pygame.mixer.init()
+    except Exception:
+        # if the mixer fails to init for some reason, just continue without music
+        pass
+
+    
+    music_path = os.path.join(here, "assets", "MUSIC", "ingame.ogg")
+    if os.path.exists(music_path):
+        pygame.mixer.music.load(music_path)
+        pygame.mixer.music.play(-1)  
+    # ----------------------------------------------------------------------
+
     map_path = os.path.join(here, "assets", "InGameBG", "map.tmx")
 
     if not os.path.exists(map_path):
@@ -121,10 +139,12 @@ def game_screen(screen):
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                pygame.mixer.music.stop()
                 pygame.quit()
                 return
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
+                    pygame.mixer.music.stop()
                     return "menu"
 
             # for testing        
