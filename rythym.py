@@ -1,6 +1,6 @@
 import pygame
 
-AUQUA = (0,255,225)
+AUQUA = (0, 123, 173)
 RED = (255, 0, 0)
 NAVY = (0, 0, 128)
 GREEN = (102, 255, 0)
