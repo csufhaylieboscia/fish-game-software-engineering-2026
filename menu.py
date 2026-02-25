@@ -3,7 +3,7 @@ import pygame.freetype
 from pygame.sprite import Sprite
 from enum   import Enum
 import os
-from game_screen import game_screen
+from game import gameLoop
 
 
 Base_Dir = os.path.dirname(os.path.abspath(__file__))

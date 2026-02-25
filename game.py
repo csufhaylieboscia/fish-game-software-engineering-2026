@@ -2,7 +2,7 @@ import pygame
 import pytmx # type: ignore
 import os
 
-from player import Sprite
+from player import Player
 
 # for testing purposes
 from rythym import rythymGameStart
@@ -99,7 +99,7 @@ def get_collision_rects(tmx_data, layer_name="collision"):
                 ))
     return rects
 
-def game_screen(screen):
+def gameLoop(screen):
     """
     The main in-game screen. Called from main-menu.py when Start is clicked.
     Press ESC to return to the main menu.
@@ -129,7 +129,7 @@ def game_screen(screen):
     player_speed = 4
 
     running = True
-    player = Sprite(x=tilemap.pixel_width // 2, y=tilemap.pixel_height // 2)
+    player = Player(x=tilemap.pixel_width // 2, y=tilemap.pixel_height // 2)
     
     while running:
         for event in pygame.event.get():
