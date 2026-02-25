@@ -1,12 +1,20 @@
 import pygame
 
-surface = pygame.display.set_mode((1000, 600))
-Auqua = (0,255,225)
+AUQUA = (0,255,225)
+RED = (255, 0, 0)
+NAVY = (0, 0, 128)
+GREEN = (102, 255, 0)
+BLACK = (0, 0, 0)
 
+surface = pygame.display.set_mode((800, 600))
+allObjectsList = pygame.sprite.Group()
 
 def rythymGameStart():
 
-    slider = rythymSliderMov(30,40,30,10,60)
+    initializeRythymBar()
+
+    slider = GameObject(BLACK, 10, 50, 100, 500, 1) 
+    allObjectsList.add(slider)
 
     run = True
     while run:
@@ -15,39 +23,64 @@ def rythymGameStart():
                 run = False
                 pygame.quit()
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
+                if event.key == pygame.K_ESCAPE:
+                    run = False
+                elif event.key == pygame.K_SPACE:
                     print("Space was pressed!")
-                    # handle space press
-
-        surface.fill(Auqua)
+                    result = spacePressed()
+                    if (result == 0): 
+                        print("display fish")
+                        run = False         #Probably go to fish caught scene
+    
+        surface.fill(AUQUA)
+        allObjectsList.draw(surface)
         slider.update()
 
         pygame.display.flip()
         pygame.display.update()
 
         
+def initializeRythymBar():
+    # GameObject(color, width, height, xpos, ypos, speed)
+    outsideL = GameObject(NAVY, 300, 25, 50, 510, 0)
+    outsideR = GameObject(NAVY, 300, 25, 450, 510, 0)
+    target = GameObject(GREEN, 100, 25, 350, 510, 0)
 
+    allObjectsList.add(outsideL)
+    allObjectsList.add(outsideR)
+    allObjectsList.add(target)
 
 def spacePressed():
-    '''might want to add return type
-        0 is success caught fish can exit this rythym game run loop on line 18
-        1 is failure no fish caught so try again. Dont stop the loop'''
+    barList = allObjectsList.sprites()
+    outsideL = barList[0]
+    outsideR = barList[1]
+    target = barList[2]
+    slider = barList[3]
+
+    if (pygame.sprite.collide_rect(target, slider)): 
+        print("Target was hit!")
+        return 0
+    elif (pygame.sprite.collide_rect(outsideL, slider) or pygame.sprite.collide_rect(outsideR, slider)):
+        print("outside of range! Try again")
+        return 1
 
 
-class rythymSliderMov (pygame.sprite.Sprite):
-    def __init__(self, x, y, speed, min_x, max_x):
+class GameObject(pygame.sprite.Sprite):
+    def __init__(self, color, width, height, x, y, speed):
         super().__init__()
-        self.image = pygame.Surface([x,y])
-        self.image.fill((255, 0, 0))
-        self.rect.x = x
-        self.rect.y = y
-        self.speed = speed
-        self.direction = 1 #start moving right
-        self.min_x = min_x
-        self.max_x = max_x
+
+        self.image = pygame.Surface([width, height])
+        self.image.fill(color)
 
         self.rect = self.image.get_rect()
-    
+        self.rect.x = x
+        self.rect.y = y
+
+        self.speed = speed
+        self.direction = 1
+        self.min_x = 50
+        self.max_x = 750
+
     def update(self):
         # move horizontally
         self.rect.x += self.speed *self.direction
