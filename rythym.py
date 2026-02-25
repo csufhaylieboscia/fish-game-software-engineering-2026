@@ -13,7 +13,7 @@ def rythymGameStart():
 
     initializeRythymBar()
 
-    slider = GameObject(BLACK, 10, 50, 100, 500, 1) 
+    slider = GameObject(BLACK, 10, 50, 100, 500, 2) 
     allObjectsList.add(slider)
 
     run = True
@@ -30,6 +30,8 @@ def rythymGameStart():
                     result = spacePressed()
                     if (result == 0): 
                         print("display fish")
+                        #kill all sprites
+                        killAllGameObjects()
                         run = False         #Probably go to fish caught scene
     
         surface.fill(AUQUA)
@@ -63,6 +65,10 @@ def spacePressed():
     elif (pygame.sprite.collide_rect(outsideL, slider) or pygame.sprite.collide_rect(outsideR, slider)):
         print("outside of range! Try again")
         return 1
+
+def killAllGameObjects():
+    for obj in allObjectsList:
+        obj.kill()
 
 
 class GameObject(pygame.sprite.Sprite):
