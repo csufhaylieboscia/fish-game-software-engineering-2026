@@ -147,14 +147,15 @@ class GameState(Enum):
    QUIT = -1
    START = 1
 
+def main_menu_loop(screen, clock):
 
-def main():
-    pygame.init()
+    pygame.mixer.init() # MOVED THIS - cali
+    music_file_path = os.path.join(Music_Dir, "Main-menu.ogg")
+    pygame.mixer.init()
+    pygame.mixer.music.load(music_file_path)
+    pygame.mixer.music.play(-1)
+    pygame.mixer.music.set_volume(0.5)
 
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    clock = pygame.time.Clock()
-
-    # create parallax layers; images should tile horizontally
     layers = [
         ParallaxLayer(os.path.join(Water_BG_Dir, "1.png"), 0.2),
         ParallaxLayer(os.path.join(Water_BG_Dir, "2.png"), 0.5),
@@ -163,10 +164,8 @@ def main():
         ParallaxLayer(os.path.join(Water_BG_Dir, "5.png"), 1.2),
     ]
 
-    # create UI elements
     def start_action():
-        print("Start button pressed")
-        game_screen(screen)
+        return "game"   # CHANGED - cali
 
     start_btn = UIElement(
         center_position=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2),
@@ -174,7 +173,7 @@ def main():
         bg_rgb=BLUE,
         text_rgb=WHITE,
         text="Start",
-        action=start_action,
+        action="game",  # CHANGED - cali
     )
 
     quit_btn = UIElement(
@@ -183,7 +182,7 @@ def main():
         bg_rgb=BLUE,
         text_rgb=WHITE,
         text="Quit",
-        action=GameState.QUIT,
+        action="quit",  # CHANGED - cali
     )
 
     # main loop
@@ -192,10 +191,10 @@ def main():
     while True:
         dt = clock.tick(60) / 1000.0
         mouse_up = False
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                return
+                return "quit"
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 mouse_up = True
 
@@ -208,31 +207,13 @@ def main():
         mouse_pos = pygame.mouse.get_pos()
         for btn in buttons:
             action = btn.update(mouse_pos, mouse_up)
-            if action is not None:
-                if action == GameState.QUIT:
-                    pygame.quit()
-                    return
-                if callable(action):
-                    action()
+            if action == "quit":
+                pygame.quit()
+                return "quit"       # CHANGED - cali
+            if action == "game":
+                return "game"
+
         for btn in buttons:
             btn.draw(screen)
 
         pygame.display.flip()
-
-
-####  Music playback code  ####
-# 1. Initialize the mixer
-pygame.mixer.init()
-
-# 2. Load the OGG file
-music_file_path = os.path.join(Music_Dir, "Main-menu.ogg")
-pygame.mixer.music.load(music_file_path)
-# 3. Start playing the music (loop infinitely)
-pygame.mixer.music.play(-1)
-# 4. Optionally, set the volume (0.0 to 1.0)
-pygame.mixer.music.set_volume(0.5)
-
-
-# call main when the script is run
-if __name__ == "__main__":
-    main()
