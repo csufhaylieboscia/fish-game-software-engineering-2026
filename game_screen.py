@@ -2,7 +2,7 @@ import pygame
 import pytmx # type: ignore
 import os
 
-from SpriteClass import Sprite
+from player import Sprite
 
 # for testing purposes
 from rythym import rythymGameStart
@@ -116,6 +116,7 @@ def game_screen(screen):
     player_speed = 4
 
     running = True
+    player = Sprite(x=tilemap.pixel_width // 2, y=tilemap.pixel_height // 2)
     while running:
 
         for event in pygame.event.get():
@@ -124,7 +125,7 @@ def game_screen(screen):
                 return
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    running = False
+                    return "menu"
 
             # for testing        
             if event.type == pygame.KEYDOWN:
@@ -145,8 +146,6 @@ def game_screen(screen):
         screen.fill((30, 30, 30))
         tilemap.draw(screen, camera.x, camera.y)
 
-        # Character sprite
-        player = Sprite(x=tilemap.pixel_width // 2, y=tilemap.pixel_height // 2)
         keys = pygame.key.get_pressed()
         player.update(keys)
         screen.blit(player.image, (screen_w // 2 - player.rect.width // 2,
@@ -154,6 +153,8 @@ def game_screen(screen):
         pygame.display.flip()
         clock.tick(60)
 
-
-if __name__ == "__main__":
+# Just for testing *remove this before submitting* - allows you to run game_screen.py directly without going through main.py
+"""if __name__ == "__main__":
     pygame.init()
+    screen = pygame.display.set_mode((800, 600))
+    game_screen(screen)"""
