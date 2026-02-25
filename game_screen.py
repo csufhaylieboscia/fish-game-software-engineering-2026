@@ -89,6 +89,15 @@ class Camera:
         self.x = max(0, min(self.x, self.map_pixel_w - self.screen_w))
         self.y = max(0, min(self.y, self.map_pixel_h - self.screen_h))
 
+def get_collision_rects(tmx_data, layer_name="collision"):
+    rects = []
+    for layer in tmx_data.visible_layers:
+        if isinstance(layer, pytmx.TiledObjectGroup) and layer.name == layer_name:
+            for obj in layer:
+                rects.append(pygame.Rect(
+                    int(obj.x * SCALE), int(obj.y * SCALE), int(obj.width * SCALE), int(obj.height * SCALE)
+                ))
+    return rects
 
 def game_screen(screen):
     """
@@ -129,14 +138,18 @@ def game_screen(screen):
     tilemap = TileMap(map_path, scale=SCALE)
     camera  = Camera(screen_w, screen_h, tilemap.pixel_width, tilemap.pixel_height)
 
+    # load collision rects
+    collision_rects = get_collision_rects(tilemap.tmx, layer_name="collision")
+    print(f"Loaded {len(collision_rects)} collision rects from Tiled map.")
+
     player_x = tilemap.pixel_width  // 2
     player_y = tilemap.pixel_height // 2
     player_speed = 4
 
     running = True
     player = Sprite(x=tilemap.pixel_width // 2, y=tilemap.pixel_height // 2)
+    
     while running:
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.mixer.music.stop()
@@ -152,6 +165,9 @@ def game_screen(screen):
                 if event.key == pygame.K_SPACE:
                     rythymGameStart()
 
+        # save position so we cna roll back if we collide with a wall
+        old_x, old_y = player_x, player_y
+
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]  or keys[pygame.K_a]: player_x -= player_speed
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]: player_x += player_speed
@@ -160,6 +176,22 @@ def game_screen(screen):
 
         player_x = max(0, min(player_x, tilemap.pixel_width))
         player_y = max(0, min(player_y, tilemap.pixel_height))
+
+        # player's hit box
+        player_w = player.rect.width
+        player_h = player.rect.height
+        player_world_rect = pygame.Rect(
+            player_x - player_w // 2,
+            player_y - player_h // 2,
+            player_w,
+            player_h
+        )
+
+        # revert movement if we collide with a wall
+        for collision_rect in collision_rects:
+            if player_world_rect.colliderect(collision_rect):
+                player_x, player_y = old_x, old_y
+                break
 
         camera.center_on(player_x, player_y)
 
