@@ -4,6 +4,8 @@ import os
 
 from SpriteClass import Sprite
 
+# for testing purposes
+from rythym import rythymGameStart
 
 TILE_SIZE = 16      # Each tile in the PNG is 16×16 pixels
 SCALE = 3           # Scale up 3x
@@ -123,6 +125,11 @@ def game_screen(screen):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
+
+            # for testing        
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    rythymGameStart()
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]  or keys[pygame.K_a]: player_x -= player_speed
