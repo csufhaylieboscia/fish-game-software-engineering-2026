@@ -6,7 +6,7 @@ from player import Player
 from ui import UIElement, create_surface_with_text
 
 # for testing purposes
-from rythym import rythymGameStart
+from rhythm import rhythmGameStart
 
 TILE_SIZE = 16      # Each tile in the PNG is 16×16 pixels
 SCALE = 3           # Scale up 3x
@@ -245,7 +245,7 @@ def gameLoop(screen):
             # for testing        
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    rythymGameStart()
+                    rhythmGameStart()
 
         # window size might have changed (fullscreen toggle) so update
         screen_w, screen_h = screen.get_size()
