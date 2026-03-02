@@ -3,25 +3,16 @@ import pygame.freetype
 
 
 def create_surface_with_text(text, font_size, text_rgb, bg_rgb):
-    """Return a surface containing *text* at given colour and size.
-
-    This duplicates the helper that was previously defined inside
-    ``menu.py`` so both menus and the game can share it without
-    circular imports.
-    """
     font = pygame.freetype.SysFont("Courier", font_size, bold=True)
     surface, _ = font.render(text=text, fgcolor=text_rgb, bgcolor=bg_rgb)
     return surface.convert_alpha()
 
 
 class UIElement(pygame.sprite.Sprite):
-    """An interactive button-like element that can be drawn to a surface.
 
-    The element maintains two images (normal/highlighted) along with
-    corresponding rects.  ``set_center`` can be used when the window size
-    changes so that the element stays centred.
-    """
-
+<<<<<<< HEAD
+    def __init__(self, center_position, text, font_size, bg_rgb, text_rgb, action=None):
+=======
     def __init__(self, text_image, center_position, text, font_size, bg_rgb, text_rgb, action=None):
         """Create a new element.
 
@@ -31,6 +22,7 @@ class UIElement(pygame.sprite.Sprite):
         """
         self.text_image = text_image
 
+>>>>>>> c06ce31a8742c55a6e4d06deed0d13034855c77a
         self.mouse_over = False
 
         bigger_image = pygame.transform.scale2x(text_image)
@@ -69,9 +61,4 @@ class UIElement(pygame.sprite.Sprite):
         surface.blit(self.image, self.rect)
 
     def set_center(self, center_position):
-        """Move the element to a new centre coordinate.
-
-        Both the normal and highlighted rects are updated so the button
-        stays aligned if the window size changes.
-        """
         self.rects = [img.get_rect(center=center_position) for img in self.images]
