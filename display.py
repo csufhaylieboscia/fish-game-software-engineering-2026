@@ -33,9 +33,13 @@ class Display:
     def toggle_fullscreen(self):
         self.is_fullscreen = not self.is_fullscreen
         if self.is_fullscreen:
+            self.window.display.quit()
+            self.window.display.init()
             self.window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         else:
-            self.window = pygame.display.set_mode((BASE_W, BASE_H), pygame.RESIZABLE)
+            self.window.display.quit()
+            self.window.display.init()
+            self.window = pygame.display.set_mode((BASE_W, BASE_H), pygame.SCALED)
         self.recalculate()
 
     def present(self):

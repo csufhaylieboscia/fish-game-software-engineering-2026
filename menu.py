@@ -3,7 +3,7 @@ from enum import Enum
 import os
 from game import gameLoop
 from ui import create_surface_with_text, UIElement
-
+import display
 
 Base_Dir = os.path.dirname(os.path.abspath(__file__))
 Assets_Dir = os.path.join(Base_Dir, "assets")
@@ -33,20 +33,20 @@ SCROLL_SPEED = 200  # pixels per second
 
 class ParallaxLayer:
 
-    def __init__(self, image_path, speed_factor):
+    def __init__(self, image_path, speed_factor, size_w = SCREEN_WIDTH, size_h= SCREEN_HEIGHT):
         self.speed_factor = speed_factor
         self.image = pygame.image.load(image_path).convert_alpha()
         iw, ih = self.image.get_size()
 
-        scale = SCREEN_HEIGHT / ih
+        scale = size_h / ih
         new_w = int(iw * scale)
-        self.image = pygame.transform.scale(self.image, (new_w, SCREEN_HEIGHT))
+        self.image = pygame.transform.scale(self.image, (new_w, size_h))
 
         self.width = self.image.get_width()
 
         # build enough rects to fill the screen plus one extra
         self.rects = []
-        num_sprites = SCREEN_WIDTH // self.width + 3
+        num_sprites = size_w // self.width + 3
         for i in range(num_sprites):
             rect = self.image.get_rect()
             rect.x = i * self.width
@@ -68,6 +68,9 @@ class ParallaxLayer:
         for rect in self.rects:
             surface.blit(self.image, rect)
 
+    def updateSize(self, size_w, size_h):
+        self.size_w = size_w
+        self.scaled_h = size_h
 
 class GameState(Enum):
    QUIT = -1
@@ -145,6 +148,7 @@ def main_menu_loop(screen, clock):
         # draw parallax background
         screen.fill((0, 0, 0))
         for layer in layers:
+            layer.updateSize(screen_w,screen_h)
             layer.update(dt)
             layer.draw(screen)
 
