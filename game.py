@@ -2,6 +2,7 @@ import pygame
 import pytmx # type: ignore
 import os
 
+import player
 from player import Player
 from ui import UIElement, create_surface_with_text
 
@@ -84,9 +85,33 @@ class Camera:
         self.x = 0
         self.y = 0
 
-    def center_on(self, world_x, world_y):
-        self.x = world_x - self.screen_w // 2
-        self.y = world_y - self.screen_h // 2
+        # Dead Zone Box
+        box_w = screen_w // 6
+        box_h = screen_h // 6
+        self.box = pygame.Rect(
+            screen_w // 2 - box_w // 2,
+            screen_h // 2 - box_h // 2,
+            box_w,
+            box_h
+        )
+
+    def update(self, world_x, world_y):
+        # Convert world position to screen position
+        screen_x = world_x - self.x
+        screen_y = world_y - self.y
+
+        # Only move camera if player leaves the dead zone box
+        if screen_x < self.box.left:
+            self.x -= self.box.left - screen_x
+        elif screen_x > self.box.right:
+            self.x += screen_x - self.box.right
+
+        if screen_y < self.box.top:
+            self.y -= self.box.top - screen_y
+        elif screen_y > self.box.bottom:
+            self.y += screen_y - self.box.bottom
+
+        # Clamp to map boundaries
         self.x = max(0, min(self.x, self.map_pixel_w - self.screen_w))
         self.y = max(0, min(self.y, self.map_pixel_h - self.screen_h))
 
@@ -96,7 +121,7 @@ def get_collision_rects(tmx_data, layer_name="collision"):
         if isinstance(layer, pytmx.TiledObjectGroup) and layer.name == layer_name:
             for obj in layer:
                 rects.append(pygame.Rect(
-                    int(obj.x * SCALE), int(obj.y * SCALE), int(obj.width * SCALE), int(obj.height * SCALE)
+                    int(obj.x * SCALE), int(obj.y * SCALE), int(obj.width), int(obj.height)
                 ))
     return rects
 
@@ -259,8 +284,10 @@ def gameLoop(screen):
         if keys[pygame.K_UP]    or keys[pygame.K_w]: player_y -= player_speed
         if keys[pygame.K_DOWN]  or keys[pygame.K_s]: player_y += player_speed
 
-        player_x = max(0, min(player_x, tilemap.pixel_width))
-        player_y = max(0, min(player_y, tilemap.pixel_height))
+        half_w = player.rect.width // 2
+        half_h = player.rect.height // 2
+        player_x = max(half_w, min(player_x, tilemap.pixel_width - half_w))
+        player_y = max(half_h, min(player_y, tilemap.pixel_height - half_h))
 
         # player's hit box
         player_w = player.rect.width
@@ -268,8 +295,8 @@ def gameLoop(screen):
         player_world_rect = pygame.Rect(
             player_x - player_w // 2,
             player_y - player_h // 2,
-            player_w,
-            player_h
+            player.rect.width,
+            player.rect.height
         )
 
         # revert movement if we collide with a wall
@@ -278,7 +305,7 @@ def gameLoop(screen):
                 player_x, player_y = old_x, old_y
                 break
 
-        camera.center_on(player_x, player_y)
+        camera.update(player_x, player_y)
 
         screen.fill((30, 30, 30))
         tilemap.draw(screen, camera.x, camera.y)
@@ -286,8 +313,8 @@ def gameLoop(screen):
         keys = pygame.key.get_pressed()
         player.update(keys)
         # draw player in centre of current window size
-        screen.blit(player.image, (screen_w // 2 - player.rect.width // 2,
-                                   screen_h // 2 - player.rect.height // 2))
+        screen.blit(player.image, (player_x - camera.x - player.rect.width // 2,
+                                   player_y - camera.y - player.rect.height // 2))
         pygame.display.flip()
         clock.tick(60)
 

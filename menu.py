@@ -9,6 +9,7 @@ Base_Dir = os.path.dirname(os.path.abspath(__file__))
 Assets_Dir = os.path.join(Base_Dir, "assets")
 Water_BG_Dir = os.path.join(Assets_Dir, "WaterBG")
 Music_Dir = os.path.join(Assets_Dir, "MUSIC")
+Text_Dir = os.path.join(Assets_Dir, "Text")
 
 BLUE = (106, 159, 181)
 WHITE = (255, 255, 255)
@@ -94,6 +95,7 @@ def main_menu_loop(screen, clock):
     # initial button positions; will be updated each frame based on
     # the current window size so that fullscreen keeps them centred.
     start_btn = UIElement(
+        text_image=pygame.image.load(os.path.join(Text_Dir, "start.png")),
         center_position=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2),
         font_size=30,
         bg_rgb=BLUE,
@@ -103,6 +105,7 @@ def main_menu_loop(screen, clock):
     )
 
     quit_btn = UIElement(
+        text_image=pygame.image.load(os.path.join(Text_Dir, "quit.png")),
         center_position=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 100),
         font_size=30,
         bg_rgb=BLUE,
@@ -110,6 +113,13 @@ def main_menu_loop(screen, clock):
         text="Quit",
         action="quit",
     )
+
+    #Intialize and create Title 
+    title_image = pygame.image.load(os.path.join(Text_Dir, "hookedv4.png")).convert_alpha()
+    title_image = pygame.transform.scale2x(title_image)
+    title_image_rect = title_image.get_rect()
+    #pygame.Rect.inflate_ip(title_image_rect, 100, 100)
+    title_image_rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT //2 - 100)
 
     # main loop
     buttons = [start_btn, quit_btn]
@@ -151,5 +161,8 @@ def main_menu_loop(screen, clock):
 
         for btn in buttons:
             btn.draw(screen)
+
+        #title_image.set_center(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 200)
+        screen.blit(title_image, title_image_rect)
 
         pygame.display.flip()
