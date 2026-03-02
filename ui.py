@@ -9,20 +9,7 @@ def create_surface_with_text(text, font_size, text_rgb, bg_rgb):
 
 
 class UIElement(pygame.sprite.Sprite):
-
-<<<<<<< HEAD
     def __init__(self, center_position, text, font_size, bg_rgb, text_rgb, action=None):
-=======
-    def __init__(self, text_image, center_position, text, font_size, bg_rgb, text_rgb, action=None):
-        """Create a new element.
-
-        ``action`` can be any value returned by ``update`` when the element
-        is clicked; typically this is a string identifying what should
-        happen (``"quit"``, ``"resume"`` etc).
-        """
-        self.text_image = text_image
-
->>>>>>> c06ce31a8742c55a6e4d06deed0d13034855c77a
         self.mouse_over = False
 
         bigger_image = pygame.transform.scale2x(text_image)
