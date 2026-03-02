@@ -33,17 +33,15 @@ class UIElement(pygame.sprite.Sprite):
 
         self.mouse_over = False
 
-        # create the default/hover images
-        default_image = create_surface_with_text(
-            text=text, font_size=font_size, text_rgb=text_rgb, bg_rgb=bg_rgb
-        )
-        highlighted_image = create_surface_with_text(
-            text=text, font_size=int(font_size * 1.2), text_rgb=text_rgb, bg_rgb=bg_rgb
-        )
+        bigger_image = pygame.transform.scale2x(text_image)
 
-        self.images = [text_image, default_image, highlighted_image]
+        # create the default/hover images
+        default_image = text_image
+        highlighted_image = bigger_image
+
+        self.images = [default_image, highlighted_image]
         self.rects = [
-            text_image.get_rect(center=center_position),
+            #text_image.get_rect(center=center_position),
             default_image.get_rect(center=center_position),
             highlighted_image.get_rect(center=center_position),
         ]
