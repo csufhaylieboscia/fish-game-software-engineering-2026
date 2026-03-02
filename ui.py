@@ -22,13 +22,15 @@ class UIElement(pygame.sprite.Sprite):
     changes so that the element stays centred.
     """
 
-    def __init__(self, center_position, text, font_size, bg_rgb, text_rgb, action=None):
+    def __init__(self, text_image, center_position, text, font_size, bg_rgb, text_rgb, action=None):
         """Create a new element.
 
         ``action`` can be any value returned by ``update`` when the element
         is clicked; typically this is a string identifying what should
         happen (``"quit"``, ``"resume"`` etc).
         """
+        self.text_image = text_image
+
         self.mouse_over = False
 
         # create the default/hover images
@@ -39,8 +41,9 @@ class UIElement(pygame.sprite.Sprite):
             text=text, font_size=int(font_size * 1.2), text_rgb=text_rgb, bg_rgb=bg_rgb
         )
 
-        self.images = [default_image, highlighted_image]
+        self.images = [text_image, default_image, highlighted_image]
         self.rects = [
+            text_image.get_rect(center=center_position),
             default_image.get_rect(center=center_position),
             highlighted_image.get_rect(center=center_position),
         ]
