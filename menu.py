@@ -117,7 +117,7 @@ def main_menu_loop(screen, clock):
     title_image = pygame.transform.scale2x(title_image)
     title_image_rect = title_image.get_rect()
     #pygame.Rect.inflate_ip(title_image_rect, 100, 100)
-    title_image_rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT //2 - 100)
+    
 
     # main loop
     buttons = [start_btn, quit_btn]
@@ -160,7 +160,7 @@ def main_menu_loop(screen, clock):
         for btn in buttons:
             btn.draw(screen)
 
-        #title_image.set_center(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 200)
+        title_image_rect.center = (screen_w // 2, screen_h //2 - 100)
         screen.blit(title_image, title_image_rect)
 
         pygame.display.flip()
