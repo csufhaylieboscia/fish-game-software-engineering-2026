@@ -114,6 +114,13 @@ def main_menu_loop(screen, clock):
         action="quit",
     )
 
+    #Intialize and create Title 
+    title_image = pygame.image.load(os.path.join(Text_Dir, "hookedv4.png")).convert_alpha()
+    title_image = pygame.transform.scale2x(title_image)
+    title_image_rect = title_image.get_rect()
+    #pygame.Rect.inflate_ip(title_image_rect, 100, 100)
+    title_image_rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT //2 - 100)
+
     # main loop
     buttons = [start_btn, quit_btn]
     offsets = [0, 100]  # vertical offsets from centre for each button
@@ -155,6 +162,7 @@ def main_menu_loop(screen, clock):
         for btn in buttons:
             btn.draw(screen)
 
-        
+        #title_image.set_center(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 200)
+        screen.blit(title_image, title_image_rect)
 
         pygame.display.flip()
