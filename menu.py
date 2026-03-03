@@ -116,8 +116,11 @@ def main_menu_loop(screen, clock):
     )
 
     #Intialize and create Title 
+    scale = 300
     title_image = pygame.image.load(os.path.join(Text_Dir, "hookedv4.png")).convert_alpha()
-    title_image = pygame.transform.scale(title_image, (300*2,300))
+    tw, th = title_image.get_size()
+    ratio = tw/th
+    title_image = pygame.transform.scale(title_image, (scale*ratio,scale))
     title_image_rect = title_image.get_rect()
     #pygame.Rect.inflate_ip(title_image_rect, 100, 100)
     
