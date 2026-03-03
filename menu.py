@@ -100,6 +100,7 @@ def main_menu_loop(screen, clock):
     start_btn = UIElement(
         center_position=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2),
         text="Start",
+        image_path=os.path.join(Text_Dir, "start.png"),
         font_size=30,
         bg_rgb=BLUE,
         text_rgb=WHITE,
@@ -109,6 +110,7 @@ def main_menu_loop(screen, clock):
     quit_btn = UIElement(
         center_position=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 100),
         text="Quit",
+        image_path=os.path.join(Text_Dir, "quit.png"),
         font_size=30,
         bg_rgb=BLUE,
         text_rgb=WHITE,
