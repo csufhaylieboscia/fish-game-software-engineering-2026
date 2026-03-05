@@ -9,21 +9,27 @@ def create_surface_with_text(text, font_size, text_rgb, bg_rgb):
 
 
 class UIElement(pygame.sprite.Sprite):
-    def __init__(self, center_position, text, image_path, font_size, bg_rgb, text_rgb, action=None):
+    def __init__(self, center_position, text, font_size=None, bg_rgb=None, text_rgb=None, image_path=None, action=None):
         super().__init__()
         self.mouse_over = False
-
-        # render the text and create hover/normal images
-        text_image = pygame.image.load(image_path).convert_alpha()
-        bigger_image = pygame.transform.scale2x(text_image)
-
-        self.images = [text_image, bigger_image]
-        self.rects = [
-            text_image.get_rect(center=center_position),
-            bigger_image.get_rect(center=center_position),
-        ]
-
         self.action = action
+
+        # Handle both text-based and image-based buttons
+        if image_path:
+            # Image-based buttons
+            text_image = pygame.image.load(image_path).convert_alpha()
+            bigger_image = pygame.transform.scale2x(text_image)
+            self.images = [text_image, bigger_image]
+        else:
+            # Text-based buttons
+            text_surface = create_surface_with_text(text, font_size, text_rgb, bg_rgb)
+            bigger_image = pygame.transform.scale2x(text_surface)
+            self.images = [text_surface, bigger_image]
+
+        self.rects = [
+            self.images[0].get_rect(center=center_position),
+            self.images[1].get_rect(center=center_position),
+        ]
 
     @property
     def image(self):
