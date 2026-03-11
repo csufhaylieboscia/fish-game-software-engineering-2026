@@ -38,6 +38,13 @@ def rhythmGameStart():
     clock = pygame.time.Clock()
     bg_index = 0
 
+    # load the centered minigame background image
+    minigame_bg_path = os.path.join(Assets_Dir, "InGameBG", "minigame_bg.png")
+    minigame_bg = pygame.image.load(minigame_bg_path).convert_alpha()
+    # calculate coordinates to center it on screen
+    bg_w, bg_h = minigame_bg.get_size()
+    bg_x = SCREEN_WIDTH // 2 - bg_w // 2
+    bg_y = SCREEN_HEIGHT // 2 - bg_h // 2
 
     initializeRhythmBar()
 
@@ -69,6 +76,8 @@ def rhythmGameStart():
             bg_index =runBackgroundAnimation(bg_index, scaled_bg)
 
         surface.blit(scaled_bg[bg_index], (0,0))
+        # draw centered minigame background on top of scrolling layers
+        surface.blit(minigame_bg, (bg_x, bg_y))
         allObjectsList.draw(surface)
         #slider.draw(surface)
         if (run_slider == run_slider_time):
