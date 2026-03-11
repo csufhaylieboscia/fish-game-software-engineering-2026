@@ -2,6 +2,7 @@ import pygame
 import pytmx # type: ignore
 import os
 
+import display
 import player
 from player import Player
 from ui import UIElement, create_surface_with_text
@@ -263,9 +264,9 @@ def gameLoop(screen):
                         return "quit"
                     # otherwise resume the game
 
-                # ESC toggles fullscreen/resolution now
+                # ESC used to toggle fullscreen, now does nothing here
                 elif event.key == pygame.K_ESCAPE:
-                    pygame.display.toggle_fullscreen()
+                    pass
 
             # for testing        
             if event.type == pygame.KEYDOWN:

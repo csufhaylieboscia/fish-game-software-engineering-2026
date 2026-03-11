@@ -35,18 +35,26 @@ class ParallaxLayer:
 
     def __init__(self, image_path, speed_factor, size_w = SCREEN_WIDTH, size_h= SCREEN_HEIGHT):
         self.speed_factor = speed_factor
-        self.image = pygame.image.load(image_path).convert_alpha()
-        iw, ih = self.image.get_size()
 
+        # keep the original image around for fresh rescaling later
+        self.orig_image = pygame.image.load(image_path).convert_alpha()
+        self.image = self.orig_image
+
+        # initial sizing using the provided dimensions
+        self._rescale(size_w, size_h)
+
+    def _rescale(self, size_w, size_h):
+        """Rescale ``self.image`` and rebuild rects for a new window size."""
+        iw, ih = self.orig_image.get_size()
         scale = size_h / ih
         new_w = int(iw * scale)
-        self.image = pygame.transform.scale(self.image, (new_w, size_h))
-
+        # recreate scaled image and update width
+        self.image = pygame.transform.scale(self.orig_image, (new_w, size_h))
         self.width = self.image.get_width()
 
-        # build enough rects to fill the screen plus one extra
-        self.rects = []
+        # rebuild rect list to cover the new width
         num_sprites = size_w // self.width + 3
+        self.rects = []
         for i in range(num_sprites):
             rect = self.image.get_rect()
             rect.x = i * self.width
@@ -69,8 +77,13 @@ class ParallaxLayer:
             surface.blit(self.image, rect)
 
     def updateSize(self, size_w, size_h):
-        self.size_w = size_w
-        self.scaled_h = size_h
+        # only rebuild graphics if the window size has actually changed;
+        # ``_rescale`` repositions all rects back at zero, so calling it
+        # every frame eliminated the scrolling movement.
+        if getattr(self, "size_w", None) != size_w or getattr(self, "size_h", None) != size_h:
+            self.size_w = size_w
+            self.size_h = size_h
+            self._rescale(size_w, size_h)
 
 class GameState(Enum):
    QUIT = -1
@@ -146,9 +159,8 @@ def main_menu_loop(screen, clock):
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 mouse_up = True
 
-            # ESC toggles fullscreen/resolution
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                pygame.display.toggle_fullscreen()
+            # previously ESC toggled fullscreen, now ignored
+            # if you want a key later, add it here
 
         # draw parallax background
         screen.fill((0, 0, 0))

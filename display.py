@@ -1,7 +1,37 @@
 import pygame
+import sys
 
 BASE_W = 800
 BASE_H = 600
+
+
+def get_desktop_size():
+    
+    info = pygame.display.Info()
+    return info.current_w, info.current_h
+
+
+def make_window(fullscreen: bool = False):
+    """Create and return a new display surface.
+    """
+    if fullscreen:
+        if sys.platform == "darwin":
+            return pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        return pygame.display.set_mode(get_desktop_size(), pygame.FULLSCREEN)
+    else:
+        return pygame.display.set_mode((BASE_W, BASE_H), pygame.RESIZABLE)
+
+
+def toggle_fullscreen(screen=None):
+
+    if screen is None:
+        screen = pygame.display.get_surface()
+    flags = screen.get_flags()
+    if flags & pygame.FULLSCREEN:
+        return make_window(False)
+    else:
+        return make_window(True)
+
 
 class Display:
     def __init__(self):
