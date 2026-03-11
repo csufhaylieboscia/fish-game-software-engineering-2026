@@ -12,9 +12,16 @@ class Player(pygame.sprite.Sprite):
         idle_sheet = pygame.image.load("assets/Sprites/spr_idle_strip9.png").convert_alpha()
         run_sheet  = pygame.image.load("assets/Sprites/spr_run_strip8.png").convert_alpha()
 
+        fishing_frames = []
+        for i in range(1, 14):
+            img = pygame.image.load(f"assets/Sprites/fishing/reel{i}.png").convert_alpha()
+            scaled = pygame.transform.scale(img, (self.frame_width * self.scale, self.frame_height * self.scale))
+            fishing_frames.append(scaled)
+
         self.animations = {
-            "idle": self._load_strip(idle_sheet, num_frames=9),
-            "run":  self._load_strip(run_sheet,  num_frames=8),
+            "idle":    self._load_strip(idle_sheet, num_frames=9),
+            "run":     self._load_strip(run_sheet,  num_frames=8),
+            "fishing": fishing_frames,
         }
 
         self.current_anim    = "idle"
@@ -22,6 +29,7 @@ class Player(pygame.sprite.Sprite):
         self.animation_speed = 100      
         self.last_update     = pygame.time.get_ticks()
         self.facing_right    = True
+        self.is_fishing      = False
 
         self.image = self.animations["idle"][0]
         self.rect  = self.image.get_rect(topleft=(x, y))
@@ -52,6 +60,17 @@ class Player(pygame.sprite.Sprite):
             self.frame_index  = 0
 
     def update(self, keys):
+        now = pygame.time.get_ticks()
+
+        if self.is_fishing:
+            if now - self.last_update > self.animation_speed:
+                self.last_update = now
+                if self.frame_index < len(self.animations["fishing"]) - 1:
+                    self.frame_index += 1
+            frame = self.animations["fishing"][self.frame_index]
+            self.image = frame if self.facing_right else pygame.transform.flip(frame, True, False)
+            return
+
         # Movement input handling
         moving = False
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
@@ -72,7 +91,6 @@ class Player(pygame.sprite.Sprite):
         self.set_animation("run" if moving else "idle")
 
         # Handle animation frame updates
-        now = pygame.time.get_ticks()
         if now - self.last_update > self.animation_speed:
             self.last_update = now
             self.frame_index = (self.frame_index + 1) % len(self.animations[self.current_anim])
