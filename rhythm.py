@@ -19,6 +19,13 @@ allObjectsList = pygame.sprite.Group()
 
 def rhythmGameStart():
 
+    FPS = 60
+    run_background_time = 15
+    run_slider_time = 3
+
+    run_background = 0
+    run_slider = 0
+
     background = [pygame.image.load(os.path.join(Backgroun_Dir, "bg1.png")).convert_alpha(),
                   pygame.image.load(os.path.join(Backgroun_Dir, "bg2.png")).convert_alpha(),
                   pygame.image.load(os.path.join(Backgroun_Dir, "bg3.png")).convert_alpha(),
@@ -37,6 +44,8 @@ def rhythmGameStart():
     slider = GameObject(BLACK, 10, 50, 100, 500, 10, sprite_path = os.path.join(Backgroun_Dir, "orangefish.png")) 
     allObjectsList.add(slider)
 
+
+
     run = True
     while run:
         for event in pygame.event.get():
@@ -54,20 +63,25 @@ def rhythmGameStart():
                         #kill all sprites
                         killAllGameObjects()
                         run = False         #Probably go to fish caught scene
-    
-        bg_index += 1
-        if bg_index >= len(scaled_bg):
-            bg_index = 0
+
+        if (run_background == run_background_time):
+            run_background = 0
+            bg_index =runBackgroundAnimation(bg_index, scaled_bg)
 
         surface.blit(scaled_bg[bg_index], (0,0))
         allObjectsList.draw(surface)
         #slider.draw(surface)
-        slider.update()
+        if (run_slider == run_slider_time):
+            run_slider = 0
+            slider.update()
+        
 
         pygame.display.flip()
         pygame.display.update()
 
-        clock.tick(3)
+        clock.tick(60)
+        run_background += 1
+        run_slider += 1
 
         
 def initializeRhythmBar():
@@ -98,6 +112,12 @@ def killAllGameObjects():
     for obj in allObjectsList:
         obj.kill()
 
+def runBackgroundAnimation(bg_index, scaled_bg):
+    bg_index += 1
+    if bg_index >= len(scaled_bg):
+        bg_index = 0
+    return bg_index
+
 
 class GameObject(pygame.sprite.Sprite):
     def __init__(self, color, width, height, x, y, speed, sprite_path = None):
@@ -109,6 +129,9 @@ class GameObject(pygame.sprite.Sprite):
             self.image.fill(color)
         else:
             self.image = pygame.image.load(sprite_path).convert_alpha()
+            tw, th = self.image.get_size()
+            ratio = tw/th
+            self.image = pygame.transform.scale(self.image, (50*ratio,50))
 
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -128,3 +151,6 @@ class GameObject(pygame.sprite.Sprite):
 
         if self.rect.right >= self.max_x or self.rect.left <= self.min_x:
             self.direction *= -1 
+
+    #pygane.time.set_timer
+    #custom time 
