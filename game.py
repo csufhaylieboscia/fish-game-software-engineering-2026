@@ -37,39 +37,32 @@ class TileMap:
         self._render()
 
     def _render(self):
-        """
-        Draw every layer of the map onto a single large surface once at load time.
-        Every frame we just blit this surface offset by the camera.
-        """
-        tw = self.tmx.tilewidth  * self.scale   # tile draw width
-        th = self.tmx.tileheight * self.scale   # tile draw height
+        tw = self.tmx.tilewidth * self.scale
+        th = self.tmx.tileheight * self.scale
 
-        # Create a surface big enough to hold the whole map
-        self.surface = pygame.Surface(
-            (self.pixel_width, self.pixel_height),
-            pygame.SRCALPHA
-        )
+        self.background = pygame.Surface((self.pixel_width, self.pixel_height), pygame.SRCALPHA)
+        self.foreground = pygame.Surface((self.pixel_width, self.pixel_height), pygame.SRCALPHA)
 
-        # Loop through every tile layer in your Tiled map
         for layer in self.tmx.visible_layers:
-            # only process tile layers, skip object layers etc
             if not isinstance(layer, pytmx.TiledTileLayer):
                 continue
 
-            # loop through every tile in the layer. pytmx gives us the tile image and its column/row.
             for x, y, image in layer.tiles():
                 if image is None:
                     continue
-                # scale the tile image to the desired draw size
-                scaled_image = pygame.transform.scale(image, (tw, th))
-                # blit the tile image to the correct position on the surface
-                self.surface.blit(scaled_image, (x * tw, y * th))
 
-    def draw(self, screen, camera_x, camera_y):
-        """
-        Draw the pre-rendered map surface onto the screen, offset by the camera.
-        """
-        screen.blit(self.surface, (-camera_x, -camera_y))
+                scaled = pygame.transform.scale(image, (tw, th))
+
+                if layer.name == "foreground":
+                    self.foreground.blit(scaled, (x * tw, y * th))
+                else:
+                    self.background.blit(scaled, (x * tw, y * th))
+
+    def draw_background(self, screen, camera_x, camera_y):
+        screen.blit(self.background, (-camera_x, -camera_y))
+
+    def draw_foreground(self, screen, camera_x, camera_y):
+        screen.blit(self.foreground, (-camera_x, -camera_y))
 
 class Camera:
     """
@@ -309,7 +302,7 @@ def gameLoop(screen):
         camera.update(player_x, player_y)
 
         screen.fill((30, 30, 30))
-        tilemap.draw(screen, camera.x, camera.y)
+        tilemap.draw_background(screen, camera.x, camera.y)
 
         # debug tiles
         for rect in collision_rects:
@@ -319,6 +312,8 @@ def gameLoop(screen):
         # draw player in centre of current window size
         screen.blit(player.image, (player_x - camera.x - player.rect.width // 2,
                                    player_y - camera.y - player.rect.height // 2))
+        
+        tilemap.draw_foreground(screen, camera.x, camera.y)
         
         pygame.display.flip()
         clock.tick(60)
