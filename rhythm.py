@@ -1,4 +1,5 @@
 import pygame
+import os
 
 AUQUA = (0, 123, 173)
 RED = (255, 0, 0)
@@ -6,14 +7,34 @@ NAVY = (0, 0, 128)
 GREEN = (102, 255, 0)
 BLACK = (0, 0, 0)
 
-surface = pygame.display.set_mode((800, 600))
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+
+Base_Dir = os.path.dirname(os.path.abspath(__file__))
+Assets_Dir = os.path.join(Base_Dir, "assets")
+Backgroun_Dir = os.path.join(Assets_Dir, "UnderWater")
+
+surface = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 allObjectsList = pygame.sprite.Group()
 
 def rhythmGameStart():
 
+    background = [pygame.image.load(os.path.join(Backgroun_Dir, "bg1.png")).convert_alpha(),
+                  pygame.image.load(os.path.join(Backgroun_Dir, "bg2.png")).convert_alpha(),
+                  pygame.image.load(os.path.join(Backgroun_Dir, "bg3.png")).convert_alpha(),
+                  pygame.image.load(os.path.join(Backgroun_Dir, "bg4.png")).convert_alpha()]
+    scaled_bg = []
+
+    for layer in background:
+        scaled_image = pygame.transform.scale(layer, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        scaled_bg.append(scaled_image)
+    clock = pygame.time.Clock()
+    bg_index = 0
+
+
     initializeRhythmBar()
 
-    slider = GameObject(BLACK, 10, 50, 100, 500, 2) 
+    slider = GameObject(BLACK, 10, 50, 100, 500, 10, sprite_path = os.path.join(Backgroun_Dir, "orangefish.png")) 
     allObjectsList.add(slider)
 
     run = True
@@ -34,12 +55,19 @@ def rhythmGameStart():
                         killAllGameObjects()
                         run = False         #Probably go to fish caught scene
     
-        surface.fill(AUQUA)
+        bg_index += 1
+        if bg_index >= len(scaled_bg):
+            bg_index = 0
+
+        surface.blit(scaled_bg[bg_index], (0,0))
         allObjectsList.draw(surface)
+        #slider.draw(surface)
         slider.update()
 
         pygame.display.flip()
         pygame.display.update()
+
+        clock.tick(3)
 
         
 def initializeRhythmBar():
@@ -72,11 +100,15 @@ def killAllGameObjects():
 
 
 class GameObject(pygame.sprite.Sprite):
-    def __init__(self, color, width, height, x, y, speed):
+    def __init__(self, color, width, height, x, y, speed, sprite_path = None):
         super().__init__()
 
-        self.image = pygame.Surface([width, height])
-        self.image.fill(color)
+        
+        if (sprite_path == None):
+            self.image = pygame.Surface([width, height])
+            self.image.fill(color)
+        else:
+            self.image = pygame.image.load(sprite_path).convert_alpha()
 
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -86,6 +118,9 @@ class GameObject(pygame.sprite.Sprite):
         self.direction = 1
         self.min_x = 50
         self.max_x = 750
+
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)
 
     def update(self):
         # move horizontally

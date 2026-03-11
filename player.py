@@ -26,6 +26,8 @@ class Player(pygame.sprite.Sprite):
         self.image = self.animations["idle"][0]
         self.rect  = self.image.get_rect(topleft=(x, y))
 
+        self.hitbox = pygame.Rect(0, 0, 20 * self.scale, 20 * self.scale)
+
     def _load_strip(self, sheet, num_frames):
         """Slice every frame from a horizontal strip and scale it."""
         frames = []
