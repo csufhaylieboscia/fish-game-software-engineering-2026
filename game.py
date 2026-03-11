@@ -268,15 +268,15 @@ def gameLoop(screen):
                     player.frame_index = 0
                     player.is_fishing = True
                     player.animation_speed = 100
-            
+
                     fishing_done = False
                     while not fishing_done:
                         clock.tick(60)
                         player.update(pygame.key.get_pressed())
-            
+
                         if player.frame_index >= len(player.animations["fishing"]) - 1:
                             fishing_done = True
-            
+
                         screen.fill((30, 30, 30))
                         tilemap.draw_background(screen, camera.x, camera.y)
                         screen.blit(player.image, (
@@ -285,7 +285,7 @@ def gameLoop(screen):
                         ))
                         tilemap.draw_foreground(screen, camera.x, camera.y)
                         pygame.display.flip()
-            
+
                     player.is_fishing = False
                     player.set_animation("idle")
                     rhythmGameStart()
@@ -329,9 +329,11 @@ def gameLoop(screen):
         screen.fill((30, 30, 30))
         tilemap.draw_background(screen, camera.x, camera.y)
 
+        '''
         # debug tiles
         for rect in collision_rects:
             pygame.draw.rect(screen, (0, 255, 0), pygame.Rect(rect.x - camera.x, rect.y - camera.y, rect.width, rect.height), 2)
+        '''
 
         player.update(keys)
         # draw player in centre of current window size
