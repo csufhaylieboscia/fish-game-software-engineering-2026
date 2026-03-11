@@ -121,7 +121,7 @@ def get_collision_rects(tmx_data, layer_name="collision"):
         if isinstance(layer, pytmx.TiledObjectGroup) and layer.name == layer_name:
             for obj in layer:
                 rects.append(pygame.Rect(
-                    int(obj.x * SCALE), int(obj.y * SCALE), int(obj.width), int(obj.height)
+                    int(obj.x * SCALE), int(obj.y * SCALE), int(obj.width * SCALE), int(obj.height * SCALE)
                 ))
     return rects
 
@@ -284,19 +284,20 @@ def gameLoop(screen):
         if keys[pygame.K_UP]    or keys[pygame.K_w]: player_y -= player_speed
         if keys[pygame.K_DOWN]  or keys[pygame.K_s]: player_y += player_speed
 
-        half_w = player.rect.width // 2
-        half_h = player.rect.height // 2
+        half_w = player.hitbox.width // 2
+        half_h = player.hitbox.height // 2
+
         player_x = max(half_w, min(player_x, tilemap.pixel_width - half_w))
         player_y = max(half_h, min(player_y, tilemap.pixel_height - half_h))
 
         # player's hit box
-        player_w = player.rect.width
-        player_h = player.rect.height
+        player_w = player.hitbox.width
+        player_h = player.hitbox.height
         player_world_rect = pygame.Rect(
             player_x - player_w // 2,
             player_y - player_h // 2,
-            player.rect.width,
-            player.rect.height
+            player_w,
+            player_h
         )
 
         # revert movement if we collide with a wall
@@ -310,11 +311,15 @@ def gameLoop(screen):
         screen.fill((30, 30, 30))
         tilemap.draw(screen, camera.x, camera.y)
 
-        keys = pygame.key.get_pressed()
+        # debug tiles
+        for rect in collision_rects:
+            pygame.draw.rect(screen, (0, 255, 0), pygame.Rect(rect.x - camera.x, rect.y - camera.y, rect.width, rect.height), 2)
+
         player.update(keys)
         # draw player in centre of current window size
         screen.blit(player.image, (player_x - camera.x - player.rect.width // 2,
                                    player_y - camera.y - player.rect.height // 2))
+        
         pygame.display.flip()
         clock.tick(60)
 
