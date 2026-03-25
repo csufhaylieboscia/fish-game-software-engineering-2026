@@ -215,7 +215,7 @@ def rhythmGameStart():
                         print("display fish")
                         killAllGameObjects()
                         run = False
-                        # ---- show the celebration screen ----
+                        # show the celebration screen with sparkles and bouncy text
                         you_caught_it_screen(scaled_bg)
 
         if run_background == run_background_time:
