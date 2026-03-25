@@ -1,5 +1,6 @@
 import pygame
 import os
+from pygame import mixer
 
 AUQUA = (0, 123, 173)
 RED = (255, 0, 0)
@@ -13,6 +14,7 @@ SCREEN_HEIGHT = 600
 Base_Dir = os.path.dirname(os.path.abspath(__file__))
 Assets_Dir = os.path.join(Base_Dir, "assets")
 Backgroun_Dir = os.path.join(Assets_Dir, "UnderWater")
+caught_fish_sound = os.path.join(Assets_Dir, "MUSIC/SoundEffects/getItemLOZ.mp3")
 
 surface = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 allObjectsList = pygame.sprite.Group()
@@ -51,6 +53,9 @@ def rhythmGameStart():
     slider = GameObject(BLACK, 10, 50, 100, 500, 10, sprite_path = os.path.join(Backgroun_Dir, "orangefish.png")) 
     allObjectsList.add(slider)
 
+    #load in sound effect
+    mixer.music.load(caught_fish_sound)
+    mixer.music.set_volume(0.7)
 
 
     run = True
@@ -66,6 +71,7 @@ def rhythmGameStart():
                     print("Space was pressed!")
                     result = spacePressed()
                     if (result == 0): 
+                        #mixer.music.play()
                         print("display fish")
                         #kill all sprites
                         killAllGameObjects()
