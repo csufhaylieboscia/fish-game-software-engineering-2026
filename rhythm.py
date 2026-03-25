@@ -219,7 +219,7 @@ def rhythmGameStart():
                     print("Space was pressed!")
                     result = spacePressed()
                     if result == 0:
-                        #mixer.music.play()
+                        mixer.music.play()
                         print("display fish")
                         killAllGameObjects()
                         run = False
