@@ -10,6 +10,8 @@ from ui import UIElement, create_surface_with_text
 # for testing purposes
 from rhythm import rhythmGameStart
 
+from aquarium import aquarium_loop
+
 TILE_SIZE = 16      # Each tile in the PNG is 16×16 pixels
 SCALE = 3           # Scale up 3x
 TILE_DRAW = TILE_SIZE * SCALE   # 48 pixels per tile on screen
@@ -109,7 +111,7 @@ class Camera:
         self.x = max(0, min(self.x, self.map_pixel_w - self.screen_w))
         self.y = max(0, min(self.y, self.map_pixel_h - self.screen_h))
 
-def get_collision_rects(tmx_data, layer_name="collision"):
+def get_collision_rects(tmx_data, layer_name = "collision"):
     rects = []
     for layer in tmx_data.visible_layers:
         if isinstance(layer, pytmx.TiledObjectGroup) and layer.name == layer_name:
@@ -118,6 +120,18 @@ def get_collision_rects(tmx_data, layer_name="collision"):
                     int(obj.x * SCALE), int(obj.y * SCALE), int(obj.width * SCALE), int(obj.height * SCALE)
                 ))
     return rects
+
+def get_trigger_rect(tmx_data, layer_name = "triggers", object_name = "aquarium"):
+    """Find a named object inside a Tiled object layer and return it as a pygame.Rect."""
+    for layer in tmx_data.layers:
+        if isinstance(layer, pytmx.TiledObjectGroup) and layer.name == layer_name:
+            for obj in layer:
+                if obj.name == object_name:
+                    return pygame.Rect(
+                        int(obj.x * SCALE), int(obj.y * SCALE),
+                        int(obj.width * SCALE), int(obj.height * SCALE)
+                    )
+    return None
 
 def settings_menu(screen, clock):
 
@@ -184,6 +198,32 @@ def settings_menu(screen, clock):
         pygame.display.flip()
 
 
+# Aquarium proximity prompt helper
+AQUARIUM_PROXIMITY = 150  # pixels from centre of trigger before prompt appears
+
+def draw_aquarium_prompt(screen, player_screen_x, player_screen_y):
+    """Draw 'Aquarium' label + enter hint above the player's head."""
+    font_label = pygame.font.SysFont("Arial", 20, bold=True)
+    font_hint  = pygame.font.SysFont("Arial", 15)
+
+    label = font_label.render("Aquarium", True, (255, 255, 255))
+    hint  = font_hint.render("[ Enter ]", True, (220, 220, 100))
+
+    pad   = 8
+    box_w = max(label.get_width(), hint.get_width()) + pad * 2
+    box_h = label.get_height() + hint.get_height() + pad * 2 + 4
+
+    box_x = player_screen_x - box_w // 2
+    box_y = player_screen_y - 80 - box_h
+
+    box_surf = pygame.Surface((box_w, box_h), pygame.SRCALPHA)
+    pygame.draw.rect(box_surf, (0, 0, 0, 160), box_surf.get_rect(), border_radius=6)
+    box_surf.blit(label, label.get_rect(centerx=box_w // 2, top=pad))
+    box_surf.blit(hint,  hint.get_rect(centerx=box_w // 2, top=pad + label.get_height() + 4))
+
+    screen.blit(box_surf, (box_x, box_y))
+
+
 def gameLoop(screen):
     """
     The main in-game screen. Called from main-menu.py when Start is clicked.
@@ -231,13 +271,20 @@ def gameLoop(screen):
     collision_rects = get_collision_rects(tilemap.tmx, layer_name="collision")
     water_rects = get_collision_rects(tilemap.tmx, layer_name="water")
 
+    # load aquarium trigger rect from the "triggers" object layer in Tiled
+    aquarium_rect = get_trigger_rect(tilemap.tmx, layer_name="triggers", object_name="aquarium")
+    if aquarium_rect is None:
+        print("WARNING: No 'aquarium' object found in 'triggers' layer in Tiled map.")
+
     player_x = tilemap.pixel_width  // 2
     player_y = tilemap.pixel_height // 2
     player_speed = 4
 
     running = True
     player = Player(x=tilemap.pixel_width // 2, y=tilemap.pixel_height // 2)
-    
+
+    near_aquarium = False  # tracked outside event loop so K_RETURN can read it
+
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -260,6 +307,13 @@ def gameLoop(screen):
                 # ESC used to toggle fullscreen, now does nothing here
                 elif event.key == pygame.K_ESCAPE:
                     pass
+
+                # enter aquarium when the prompt is visible
+                elif event.key == pygame.K_RETURN and near_aquarium:
+                    result = aquarium_loop(screen, clock)
+                    if result == "quit":
+                        pygame.mixer.music.stop()
+                        return "quit"
 
             # for testing        
             if event.type == pygame.KEYDOWN:
@@ -326,6 +380,13 @@ def gameLoop(screen):
                 player_x, player_y = old_x, old_y
                 break
 
+        # check proximity to aquarium trigger from Tiled
+        if aquarium_rect is not None:
+            dist = ((player_x - aquarium_rect.centerx) ** 2 + (player_y - aquarium_rect.centery) ** 2) ** 0.5
+            near_aquarium = dist < AQUARIUM_PROXIMITY
+        else:
+            near_aquarium = False
+
         camera.update(player_x, player_y)
 
         screen.fill((30, 30, 30))
@@ -338,12 +399,21 @@ def gameLoop(screen):
         '''
 
         player.update(keys)
+
+        # player screen coords used for both drawing and the prompt position
+        player_screen_x = player_x - camera.x
+        player_screen_y = player_y - camera.y
+
         # draw player in centre of current window size
-        screen.blit(player.image, (player_x - camera.x - player.rect.width // 2,
-                                   player_y - camera.y - player.rect.height // 2))
+        screen.blit(player.image, (player_screen_x - player.rect.width // 2,
+                                   player_screen_y - player.rect.height // 2))
         
         tilemap.draw_foreground(screen, camera.x, camera.y)
-        
+
+        # draw prompt above player's head when near the aquarium
+        if near_aquarium:
+            draw_aquarium_prompt(screen, player_screen_x, player_screen_y)
+
         pygame.display.flip()
         clock.tick(60)
 
