@@ -4,7 +4,7 @@ import math
 import random
 from pygame import mixer
 
-from rhythm import *
+from rhythm import * 
 from fish import fishObjectList
 
 '''
@@ -49,11 +49,73 @@ def fishingStart():
 
     initializeRhythmBar(diffcultyObject)
 
+    barList  = allObjectsList.sprites()
+
+    FPS = 60
+    run_background_time = 15
+    run_slider_time = 3
+
+    run_background = 0
+    run_slider = 0
+
+    background = [pygame.image.load(os.path.join(Backgroun_Dir, "bg1.png")).convert_alpha(),
+                  pygame.image.load(os.path.join(Backgroun_Dir, "bg2.png")).convert_alpha(),
+                  pygame.image.load(os.path.join(Backgroun_Dir, "bg3.png")).convert_alpha(),
+                  pygame.image.load(os.path.join(Backgroun_Dir, "bg4.png")).convert_alpha()]
+    scaled_bg = []
+
+    for layer in background:
+        scaled_image = pygame.transform.scale(layer, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        scaled_bg.append(scaled_image)
+    clock = pygame.time.Clock()
+    bg_index = 0
+
+    run = True
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                pygame.quit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    run = False
+                elif event.key == pygame.K_SPACE:
+                    print("Space was pressed!")
+                    result = spacePressed(barList)
+                    if result == 0:
+                        mixer.music.play()
+                        print("display fish")
+                        killAllGameObjects()
+                        run = False
+                        # show the celebration screen with sparkles and bouncy text
+                        you_caught_it_screen(scaled_bg)
+
+        if run_background == run_background_time:
+            run_background = 0
+            bg_index = runBackgroundAnimation(bg_index, scaled_bg)
+
+        surface.blit(scaled_bg[bg_index], (0, 0))
+        allObjectsList.draw(surface)
+        if run_slider == run_slider_time:
+            run_slider = 0
+            barList[1].update()
+            barList[2].update()
+
+        pygame.display.flip()
+        pygame.display.update()
+
+        clock.tick(60)
+        run_background += 1
+        run_slider += 1
+
 class DifficultyMethod():
     def __init__(self, level):
         self.level = level
+        
+        print(self.level)
 
         if (self.level == 1):
+
             self.targetScale = 1/8
             self.sliderSpeed = 12
             self.targetSpeed = 0
@@ -86,36 +148,31 @@ class DifficultyMethod():
             self.hitNeed = 3
             self.hitCount = 0
     
-    @property
-    def gettargetScale(self):
+    def getTargetScale(self):
         return self.targetScale
     
-    @property
     def getTargetSpeed(self):
         return self.targetSpeed
     
-    @property
     def getSliderSpeed(self):
-        return self.sliderSpeedSpeed
+        return self.sliderSpeed
     
-    @property
     def getHitsNeeded(self):
         return self.hitNeed
     
-    @property
     def getHitCount(self):
         return self.hitCount
 
 def initializeRhythmBar(difObject):
     outOfBounds = GameObject(NAVY, 7/8, 25/600, 50, 510, 0)
-    target   = GameObject(GREEN, difObject.getTargetScale(), 25/600, 350, 510, difObject.getTargetSpeed())
+    target   = GameObject(GREEN, difObject.getTargetScale(), 25/600, 350, 510, difObject.getTargetSpeed(), direction=-1)
     slider = GameObject(BLACK, 1/80, 5/60, 100, 500, difObject.getSliderSpeed(), sprite_path=os.path.join(Backgroun_Dir, "orangefish.png"))
 
     allObjectsList.add(outOfBounds)
     allObjectsList.add(target)
     allObjectsList.add(slider)
 
-def spacePressed():
+def spacePressed(barList):
     outOfBounds = barList[0]
     target   = barList[1]
     slider   = barList[2]
@@ -132,7 +189,7 @@ def killAllGameObjects():
         obj.kill()
 
 class GameObject(pygame.sprite.Sprite):
-    def __init__(self, color, widthScaler, heightScaler, x, y, speed, sprite_path=None):
+    def __init__(self, color, widthScaler, heightScaler, x, y, speed, direction=1, sprite_path=None):
         super().__init__()
 
         self.width = widthScaler * SCREEN_WIDTH
@@ -152,9 +209,9 @@ class GameObject(pygame.sprite.Sprite):
         self.rect.y = y
 
         self.speed = speed
-        self.direction = 1
-        self.min_x = 5/80 * self.width
-        self.max_x = 750/800 *self.width
+        self.direction = direction
+        self.min_x = 50
+        self.max_x = 750
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
