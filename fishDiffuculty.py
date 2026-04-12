@@ -4,6 +4,9 @@ import math
 import random
 from pygame import mixer
 
+from rhythm import *
+from fish import fishObjectList
+
 '''
 Planning:
 
@@ -19,7 +22,6 @@ Planning:
         * slider speed will change on difficulty
 
     Maybe instead of it being a differnt function call each time we create one big slider/fish game object that changes?
-    
 
     * need to make the Create Slider bar more dynamic
         * have location on screen (x and y scale to fullscreen)
@@ -39,6 +41,130 @@ Planning:
             * maybe for difficulty 3 and 4 
         * maybe the goal section also moves around (for higher difficulty?)
 
+'''
+
+def fishingStart():
+    fish2catch = random.choice(fishObjectList)
+    diffcultyObject = DifficultyMethod(fish2catch.getDifficulty())
+
+    initializeRhythmBar(diffcultyObject)
+
+class DifficultyMethod():
+    def __init__(self, level):
+        self.level = level
+
+        if (self.level == 1):
+            self.targetScale = 1/8
+            self.sliderSpeed = 12
+            self.targetSpeed = 0
+
+            self.hitNeed = 1
+            self.hitCount = 0
+
+     
+        elif (self.level == 2):
+            self.targetScale = 5/80
+            self.sliderSpeed = 17
+            self.targetSpeed = 0
+
+            self.hitNeed = 2
+            self.hitCount = 0
+
+        elif (self.level == 3):
+            self.targetScale = 25/800
+            self.sliderSpeed = 17
+            self.targetSpeed = 5
+
+            self.hitNeed = 2
+            self.hitCount = 0
+
+        elif (self.level == 4):
+            self.targetScale = 15/800
+            self.sliderSpeed = 20
+            self.targetSpeed = 5
+
+            self.hitNeed = 3
+            self.hitCount = 0
+    
+    @property
+    def gettargetScale(self):
+        return self.targetScale
+    
+    @property
+    def getTargetSpeed(self):
+        return self.targetSpeed
+    
+    @property
+    def getSliderSpeed(self):
+        return self.sliderSpeedSpeed
+    
+    @property
+    def getHitsNeeded(self):
+        return self.hitNeed
+    
+    @property
+    def getHitCount(self):
+        return self.hitCount
+
+def initializeRhythmBar(difObject):
+    outOfBounds = GameObject(NAVY, 7/8, 25/600, 50, 510, 0)
+    target   = GameObject(GREEN, 1/8, 25/600, 350, 510, 0)
+    slider = GameObject(BLACK, 1/80, 5/60, 100, 500, 10, sprite_path=os.path.join(Backgroun_Dir, "orangefish.png"))
+
+    allObjectsList.add(outOfBounds)
+    allObjectsList.add(target)
+    allObjectsList.add(slider)
+
+def spacePressed():
+    barList  = allObjectsList.sprites()
+    outOfBounds = barList[0]
+    target   = barList[1]
+    slider   = barList[2]
+
+    if pygame.sprite.collide_rect(target, slider):
+        print("Target was hit!")
+        return 0
+    elif pygame.sprite.collide_rect(outsideL, slider): #or pygame.sprite.collide_rect(outsideR, slider):
+        print("outside of range! Try again")
+        return 1
+
+def killAllGameObjects():
+    for obj in allObjectsList:
+        obj.kill()
+
+class GameObject(pygame.sprite.Sprite):
+    def __init__(self, color, difficultyObject, x, y, sprite_path=None):
+        super().__init__()
+
+        self.width = 7/8 * SCREEN_WIDTH
+        self.height = 25/600 * SCREEN_HEIGHT
+
+        if sprite_path is None:
+            self.image = pygame.Surface([self.width, self.height])
+            self.image.fill(color)
+        else:
+            self.image = pygame.image.load(sprite_path).convert_alpha()
+            tw, th = self.image.get_size()
+            ratio = tw / th
+            self.image = pygame.transform.scale(self.image, (50 * ratio, 50))
+
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+        self.speed = speed
+        self.direction = 1
+        self.min_x = 50
+        self.max_x = 750
+
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)
+
+    def update(self):
+        self.rect.x += self.speed * self.direction
+        if self.rect.right >= self.max_x or self.rect.left <= self.min_x:
+            self.direction *= -1
+'''
 Current Workflow in Rhythm:
 
 RhythmGameStart() called
