@@ -116,7 +116,6 @@ def initializeRhythmBar(difObject):
     allObjectsList.add(slider)
 
 def spacePressed():
-    barList  = allObjectsList.sprites()
     outOfBounds = barList[0]
     target   = barList[1]
     slider   = barList[2]
@@ -124,7 +123,7 @@ def spacePressed():
     if pygame.sprite.collide_rect(target, slider):
         print("Target was hit!")
         return 0
-    elif pygame.sprite.collide_rect(outsideL, slider): #or pygame.sprite.collide_rect(outsideR, slider):
+    elif pygame.sprite.collide_rect(outOfBounds, slider):
         print("outside of range! Try again")
         return 1
 
