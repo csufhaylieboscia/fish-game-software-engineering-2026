@@ -7,42 +7,6 @@ from pygame import mixer
 from rhythm import * 
 from fish import fishObjectList
 
-'''
-Planning:
-
-* when first enter randomly choose what object/ fish to get
-    * implement a random choice picker function
-
-* receive difficulty from get function
-
-* based in what we recieve send to each difficulty section
-    (each difficulty might need to be a differnt function call? 
-        * should include outside L R boundaries (size will be changable)
-        * inside/goal boundary (size will change) (also might move around)
-        * slider speed will change on difficulty
-
-    Maybe instead of it being a differnt function call each time we create one big slider/fish game object that changes?
-
-    * need to make the Create Slider bar more dynamic
-        * have location on screen (x and y scale to fullscreen)
-        * have size of bar (width and height scale to fullscreen)
-    
-        * change the size of bar based on difficulty
-            * maybe for this I need to implement like a ratio/ scaler
-
-    * slider bar speed
-        goals:
-          * dont want it to be too "choppy" need it to look smooth on screen
-          * higher difficulty slider goes faster
-            
-    * have the goal needs to be hit x number of times before it can be caught
-        * add a new progress bar that will be colored in with the progress completed 
-        * if the goal is missed possibly it starts dectecting?
-            * maybe for difficulty 3 and 4 
-        * maybe the goal section also moves around (for higher difficulty?)
-
-'''
-
 def fishingStart():
     fish2catch = random.choice(fishObjectList)
     diffcultyObject = DifficultyMethod(fish2catch.getDifficulty())
@@ -220,6 +184,43 @@ class GameObject(pygame.sprite.Sprite):
         self.rect.x += self.speed * self.direction
         if self.rect.right >= self.max_x or self.rect.left <= self.min_x:
             self.direction *= -1
+
+'''
+Planning:
+
+* when first enter randomly choose what object/ fish to get
+    * implement a random choice picker function
+
+* receive difficulty from get function
+
+* based in what we recieve send to each difficulty section
+    (each difficulty might need to be a differnt function call? 
+        * should include outside L R boundaries (size will be changable)
+        * inside/goal boundary (size will change) (also might move around)
+        * slider speed will change on difficulty
+
+    Maybe instead of it being a differnt function call each time we create one big slider/fish game object that changes?
+
+    * need to make the Create Slider bar more dynamic
+        * have location on screen (x and y scale to fullscreen)
+        * have size of bar (width and height scale to fullscreen)
+    
+        * change the size of bar based on difficulty
+            * maybe for this I need to implement like a ratio/ scaler
+
+    * slider bar speed
+        goals:
+          * dont want it to be too "choppy" need it to look smooth on screen
+          * higher difficulty slider goes faster
+            
+    * have the goal needs to be hit x number of times before it can be caught
+        * add a new progress bar that will be colored in with the progress completed 
+        * if the goal is missed possibly it starts dectecting?
+            * maybe for difficulty 3 and 4 
+        * maybe the goal section also moves around (for higher difficulty?)
+
+'''
+
 '''
 Current Workflow in Rhythm:
 
