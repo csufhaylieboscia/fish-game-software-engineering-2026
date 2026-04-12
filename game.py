@@ -7,8 +7,6 @@ import player
 from player import Player
 from ui import UIElement, create_surface_with_text
 
-# for testing purposes
-from rhythm import rhythmGameStart
 from fishDiffuculty import fishingStart
 
 from aquarium import aquarium_loop
