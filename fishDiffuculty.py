@@ -108,8 +108,8 @@ class DifficultyMethod():
 
 def initializeRhythmBar(difObject):
     outOfBounds = GameObject(NAVY, 7/8, 25/600, 50, 510, 0)
-    target   = GameObject(GREEN, 1/8, 25/600, 350, 510, 0)
-    slider = GameObject(BLACK, 1/80, 5/60, 100, 500, 10, sprite_path=os.path.join(Backgroun_Dir, "orangefish.png"))
+    target   = GameObject(GREEN, difObject.getTargetScale(), 25/600, 350, 510, difObject.getTargetSpeed())
+    slider = GameObject(BLACK, 1/80, 5/60, 100, 500, difObject.getSliderSpeed(), sprite_path=os.path.join(Backgroun_Dir, "orangefish.png"))
 
     allObjectsList.add(outOfBounds)
     allObjectsList.add(target)
@@ -133,11 +133,11 @@ def killAllGameObjects():
         obj.kill()
 
 class GameObject(pygame.sprite.Sprite):
-    def __init__(self, color, difficultyObject, x, y, sprite_path=None):
+    def __init__(self, color, widthScaler, heightScaler, x, y, speed, sprite_path=None):
         super().__init__()
 
-        self.width = 7/8 * SCREEN_WIDTH
-        self.height = 25/600 * SCREEN_HEIGHT
+        self.width = widthScaler * SCREEN_WIDTH
+        self.height = heightScaler * SCREEN_HEIGHT
 
         if sprite_path is None:
             self.image = pygame.Surface([self.width, self.height])
@@ -154,8 +154,8 @@ class GameObject(pygame.sprite.Sprite):
 
         self.speed = speed
         self.direction = 1
-        self.min_x = 50
-        self.max_x = 750
+        self.min_x = 5/80 * self.width
+        self.max_x = 750/800 *self.width
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
