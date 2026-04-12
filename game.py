@@ -9,6 +9,7 @@ from ui import UIElement, create_surface_with_text
 
 # for testing purposes
 from rhythm import rhythmGameStart
+from fishDiffuculty import fishingStart
 
 from aquarium import aquarium_loop
 
@@ -344,7 +345,8 @@ def gameLoop(screen):
     
                         player.is_fishing = False
                         player.set_animation("idle")
-                        rhythmGameStart()
+                        #rhythmGameStart()
+                        fishingStart()
 
         # window size might have changed (fullscreen toggle) so update
         screen_w, screen_h = screen.get_size()
