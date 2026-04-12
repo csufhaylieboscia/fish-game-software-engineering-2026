@@ -3,7 +3,7 @@ import os
 
 Base_Dir = os.path.dirname(os.path.abspath(__file__))
 Assets_Dir = os.path.join(Base_Dir, "assets")
-FishSprite_Dir = os.path.join(Assets_Dir, "fish/FishSprites")
+FishSprite_Dir = os.path.join(Assets_Dir, "Sprites\FishSprites")
 
 class Fish(pygame.sprite.Sprite):
     def __init__(self, name, imagePath, difficulty):
@@ -11,20 +11,20 @@ class Fish(pygame.sprite.Sprite):
 
         self.name = name
         self.difficulty = difficulty
+        self.imagePath = imagePath
 
-        fish_image_path = os.path.join(FishSprite_Dir, imagePath)
+    def displayFish(self):
 
+        fish_image_path = os.path.join(FishSprite_Dir, self.imagePath)
         self.image = pygame.image.load(fish_image_path).convert_alpha()
         
         #keep scale and ratio in case need to change size for full screen when swim
         #tw, th = self.image.get_size()
         #scale = self.tw / self.th
 
-    @property
     def getDifficulty(self):
         return self.difficulty
     
-    @property
     def getName(self):
         return self.name
     
