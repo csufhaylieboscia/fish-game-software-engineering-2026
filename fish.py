@@ -3,7 +3,11 @@ import os
 
 Base_Dir = os.path.dirname(os.path.abspath(__file__))
 Assets_Dir = os.path.join(Base_Dir, "assets")
+<<<<<<< HEAD
 FishSprite_Dir = os.path.join(Assets_Dir, "Sprites", "FishSprites")
+=======
+FishSprite_Dir = os.path.join(Assets_Dir, "Sprites/FishSprites")
+>>>>>>> 80bc27e6f36e3c0b3553949ac10e799cdbc2a561
 
 class Fish(pygame.sprite.Sprite):
     def __init__(self, name, imagePath, difficulty):
