@@ -81,7 +81,7 @@ def _draw_star(surf, color, cx, cy, outer, inner, points=5):
 
 
 # "You Caught It!" celebration screen
-def you_caught_it_screen(scaled_bg):
+def you_caught_it_screen(scaled_bg, fish):
     clock = pygame.time.Clock()
     timer = 0.0
 
@@ -164,6 +164,9 @@ def you_caught_it_screen(scaled_bg):
         # Draw main text
         main_rect = main_surf.get_rect(center=(cx, cy))
         surface.blit(main_surf, main_rect)
+
+        # Draw Fish image 
+        fish.displayFish(surface, SCREEN_WIDTH, SCREEN_HEIGHT)
 
         # 'press space' hint with a gentle fade in/out
         hint_alpha = int(180 + 75 * math.sin(timer * 3))

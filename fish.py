@@ -13,10 +13,16 @@ class Fish(pygame.sprite.Sprite):
         self.difficulty = difficulty
         self.imagePath = imagePath
 
-    def displayFish(self):
+    def displayFish(self, surface, screen_w, screen_h):
 
         fish_image_path = os.path.join(FishSprite_Dir, self.imagePath)
         self.image = pygame.image.load(fish_image_path).convert_alpha()
+        tw, th = self.image.get_size()
+        ratio = tw / th
+        self.image = pygame.transform.scale(self.image, (150 * ratio, 150))
+
+        self.rect = self.image.get_rect(center=(screen_w // 2, screen_h // 2))
+        surface.blit(self.image, self.rect)
         
         #keep scale and ratio in case need to change size for full screen when swim
         #tw, th = self.image.get_size()
