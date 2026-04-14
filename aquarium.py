@@ -120,19 +120,22 @@ class Bubble:
 
 def _draw_water_background(surface, screen_w, screen_h, timer):
     """Layered gradient water background with a shimmer."""
-    # Deep gradient: top (mid-blue) -> bottom (dark navy)
-    top_color = (20,  70, 130)
+    # Deep gradient
+    top_color = (20,  70, 130)      
     bottom_color = (5,   20,  55)
     for y in range(screen_h):
-        t = y / screen_h
+        t = y / screen_h    # 0 at top, 1 at bottom, keeps track of vertical position for gradient
+        # interpolate between top and bottom color based on vertical position
         r = int(top_color[0] + (bottom_color[0] - top_color[0]) * t)
         g = int(top_color[1] + (bottom_color[1] - top_color[1]) * t)
         b = int(top_color[2] + (bottom_color[2] - top_color[2]) * t)
         pygame.draw.line(surface, (r, g, b), (0, y), (screen_w, y))
 
     # gleaming light shafts
-    shaft_surf = pygame.Surface((screen_w, screen_h), pygame.SRCALPHA)
+    # SRCALPHA allows us to draw semi-transparent shapes for the shafts
+    shaft_surf = pygame.Surface((screen_w, screen_h), pygame.SRCALPHA) 
     num_shafts = 6
+    # each shaft is a polygon that oscillates horizontally and changes width/alpha over time for a shimmering effect
     for i in range(num_shafts):
         phase = timer * 0.4 + i * (math.pi * 2 / num_shafts)
         cx = int(screen_w * (0.1 + 0.8 * (i / (num_shafts - 1))) +
