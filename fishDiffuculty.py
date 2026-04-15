@@ -5,12 +5,8 @@ import random
 from pygame import mixer
 
 from rhythm import * 
-<<<<<<< HEAD
 from fish import fishObjectList, rainFishObjectList
-=======
-from fish import fishObjectList
 import aquarium
->>>>>>> 52da6a79fbf3366da5dc03ba3ccd55f07cedb095
 
 def fishingStart(isRaining=False):
     if isRaining:
