@@ -3,13 +3,9 @@ import os
 
 Base_Dir = os.path.dirname(os.path.abspath(__file__))
 Assets_Dir = os.path.join(Base_Dir, "assets")
-<<<<<<< HEAD
-FishSprite_Dir = os.path.join(Assets_Dir, "Sprites", "FishSprites")
-=======
 Sprite_Dir = os.path.join(Assets_Dir, "Sprites")
 FishSprite_Dir = os.path.join(Sprite_Dir, "FishSprites")
 
->>>>>>> 547ddb9e7f36d23d54ddf0a53d3b380a736a75f5
 
 class Fish(pygame.sprite.Sprite):
     def __init__(self, name, imagePath, difficulty):
@@ -55,4 +51,14 @@ fishObjectList = [
     Fish("sea snail","seasnail.png", 1),
     Fish("Starfish","seastar.png", 4),
     Fish("shell","shell.png", 1),
+]
+
+# Rain-exclusive fish that can only be caught during rain
+rainFishObjectList = [
+    Fish("Cal","rain_fish/Cal.png", 3),
+    Fish("Hay","rain_fish/Hay.png", 4),
+    Fish("Noc","rain_fish/Noc.png", 2),
+    Fish("Angler","rain_fish/angler.png", 5),
+    Fish("Jelly","rain_fish/jelly.png", 3),
+    Fish("Uhh","rain_fish/uhh.png", 4),
 ]

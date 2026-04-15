@@ -5,10 +5,43 @@ import random
 from pygame import mixer
 
 from rhythm import * 
-from fish import fishObjectList
+from fish import fishObjectList, rainFishObjectList
 
-def fishingStart():
-    fish2catch = random.choice(fishObjectList)
+def fishingStart(isRaining=False):
+    if isRaining:
+        # During rain: use weighted random selection for rare rain fish
+        print("🌧️  RAIN FISHING: Regular fish + rare special rain fish available!")
+        
+        # First, small chance to get a rare rain fish
+        rare_roll = random.randint(1, 1000)
+        
+        if rare_roll == 1:
+            # Ultra rare: uhh.png (1/1000)
+            fish2catch = rainFishObjectList[5]  # uhh.png
+            print("🌟 ULTRA RARE CATCH!")
+            
+        elif rare_roll <= 7:  # Numbers 2-7 (6 slots for 3 fish at 1/500 each)
+            # Very rare: Cal, Hay, Noc (1/500 each)
+            very_rare_fish = [rainFishObjectList[0], rainFishObjectList[1], rainFishObjectList[2]]  # Cal, Hay, Noc
+            fish2catch = random.choice(very_rare_fish)
+            print("💎 VERY RARE CATCH!")
+            
+        elif rare_roll <= 17:  # Numbers 8-17 (10 slots for 2 fish at 1/200 each)
+            # Rare: jelly, angler (1/200 each)
+            rare_fish = [rainFishObjectList[4], rainFishObjectList[3]]  # jelly, angler
+            fish2catch = random.choice(rare_fish)
+            print("🎯 RARE CATCH!")
+            
+        else:
+            # Common: regular fish (992/1000 chance)
+            fish2catch = random.choice(fishObjectList)
+            
+    else:
+        # During normal weather: only regular fish
+        print("☀️  NORMAL FISHING: Regular fish available")
+        fish2catch = random.choice(fishObjectList)
+    
+    print(f"🎣 Attempting to catch: {fish2catch.getName()}")
     diffcultyObject = DifficultyMethod(fish2catch.getDifficulty())
 
     initializeRhythmBar(diffcultyObject)

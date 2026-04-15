@@ -6,10 +6,12 @@ import display
 import player
 from player import Player
 from ui import UIElement, create_surface_with_text
+from inventory import Inventory
 
 from fishDiffuculty import fishingStart
 
 from aquarium import aquarium_loop
+from sky import Rain
 
 TILE_SIZE = 16      # Each tile in the PNG is 16×16 pixels
 SCALE = 3           # Scale up 3x
@@ -266,6 +268,19 @@ def gameLoop(screen):
     tilemap = TileMap(map_path, scale=SCALE)
     camera  = Camera(screen_w, screen_h, tilemap.pixel_width, tilemap.pixel_height)
 
+    inventory = Inventory(
+        os.path.join(here, "assets", "Sprites", "Inv_slots.png"),
+        num_slots=8,
+        visible_slot_count=5,
+        initial_items=["Rod"],
+    )
+
+    # Create sprite group for dynamic entities (rain, etc.)
+    all_sprites = pygame.sprite.LayeredUpdates()
+    
+    # Initialize rain system with full tilemap dimensions
+    rain = Rain(all_sprites, map_width=tilemap.pixel_width, map_height=tilemap.pixel_height)
+
     # load collision rects
     collision_rects = get_collision_rects(tilemap.tmx, layer_name="collision")
     water_rects = get_collision_rects(tilemap.tmx, layer_name="water")
@@ -285,6 +300,8 @@ def gameLoop(screen):
     near_aquarium = False  # tracked outside event loop so K_RETURN can read it
 
     while running:
+        dt = clock.tick(60) / 1000.0  # Calculate delta time once per frame
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.mixer.music.stop()
@@ -313,6 +330,10 @@ def gameLoop(screen):
                     if result == "quit":
                         pygame.mixer.music.stop()
                         return "quit"
+                else:
+                    selected_item = inventory.handle_key_event(event)
+                    if selected_item is not None or event.key in Inventory.SLOT_KEYS:
+                        print(f"Selected slot {inventory.selected_slot + 1}: {selected_item or 'Empty'}")
 
             # for testing        
             if event.type == pygame.KEYDOWN:
@@ -344,7 +365,7 @@ def gameLoop(screen):
                         player.is_fishing = False
                         player.set_animation("idle")
                         #rhythmGameStart()
-                        fishingStart()
+                        fishingStart(rain.is_raining)
 
         # window size might have changed (fullscreen toggle) so update
         screen_w, screen_h = screen.get_size()
@@ -400,6 +421,10 @@ def gameLoop(screen):
 
         player.update(keys)
 
+        # Update rain system and all sprites
+        rain.update()
+        all_sprites.update(dt)
+
         # player screen coords used for both drawing and the prompt position
         player_screen_x = player_x - camera.x
         player_screen_y = player_y - camera.y
@@ -410,12 +435,27 @@ def gameLoop(screen):
         
         tilemap.draw_foreground(screen, camera.x, camera.y)
 
+        # Draw all sprites (rain, etc.) with camera offset
+        for sprite in all_sprites:
+            offset_x = sprite.rect.x - camera.x
+            offset_y = sprite.rect.y - camera.y
+            screen.blit(sprite.image, (offset_x, offset_y))
+
+        # Weather indicator
+        if rain.is_raining:
+            rain_icon = pygame.image.load(os.path.join(here, "assets", "Sprites", "rain_icon.png")).convert_alpha()
+            rain_icon = pygame.transform.scale(rain_icon, (50, 50))  # Scale to 20x20 pixels
+            icon_rect = rain_icon.get_rect(topleft=(10, 10))
+            screen.blit(rain_icon, icon_rect)
+
         # draw prompt above player's head when near the aquarium
         if near_aquarium:
             draw_aquarium_prompt(screen, player_screen_x, player_screen_y)
 
+        inventory.draw_panel(screen, screen_w, screen_h)
+        inventory.draw_selected_item_label(screen, screen_w, screen_h)
+
         pygame.display.flip()
-        clock.tick(60)
 
 # Just for testing *remove this before submitting* - allows you to run game_screen.py directly without going through main.py
 """if __name__ == "__main__":
