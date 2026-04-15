@@ -5,7 +5,12 @@ import random
 from pygame import mixer
 
 from rhythm import * 
+<<<<<<< HEAD
 from fish import fishObjectList, rainFishObjectList
+=======
+from fish import fishObjectList
+import aquarium
+>>>>>>> 52da6a79fbf3366da5dc03ba3ccd55f07cedb095
 
 def fishingStart(isRaining=False):
     if isRaining:
@@ -86,6 +91,8 @@ def fishingStart(isRaining=False):
                         run = False
                         # show the celebration screen with sparkles and bouncy text
                         you_caught_it_screen(scaled_bg, fish2catch)
+                        # register the caught fish so it swims in the aquarium
+                        aquarium.add_caught_fish(fish2catch)
 
         if run_background == run_background_time:
             run_background = 0
