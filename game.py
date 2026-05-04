@@ -11,6 +11,7 @@ from inventory import Inventory
 from fishDiffuculty import fishingStart
 
 from aquarium import aquarium_loop
+from shop import shop_loop
 from sky import Rain
 
 TILE_SIZE = 16      # Each tile in the PNG is 16×16 pixels
@@ -201,6 +202,7 @@ def settings_menu(screen, clock):
 
 # Aquarium proximity prompt helper
 AQUARIUM_PROXIMITY = 150  # pixels from centre of trigger before prompt appears
+SHOP_PROXIMITY     = 150  # pixels from centre of shop trigger before prompt appears
 
 def draw_aquarium_prompt(screen, player_screen_x, player_screen_y):
     """Draw 'Aquarium' label + enter hint above the player's head."""
@@ -208,6 +210,29 @@ def draw_aquarium_prompt(screen, player_screen_x, player_screen_y):
     font_hint  = pygame.font.SysFont("Arial", 15)
 
     label = font_label.render("Aquarium", True, (255, 255, 255))
+    hint  = font_hint.render("[ Enter ]", True, (220, 220, 100))
+
+    pad   = 8
+    box_w = max(label.get_width(), hint.get_width()) + pad * 2
+    box_h = label.get_height() + hint.get_height() + pad * 2 + 4
+
+    box_x = player_screen_x - box_w // 2
+    box_y = player_screen_y - 80 - box_h
+
+    box_surf = pygame.Surface((box_w, box_h), pygame.SRCALPHA)
+    pygame.draw.rect(box_surf, (0, 0, 0, 160), box_surf.get_rect(), border_radius=6)
+    box_surf.blit(label, label.get_rect(centerx=box_w // 2, top=pad))
+    box_surf.blit(hint,  hint.get_rect(centerx=box_w // 2, top=pad + label.get_height() + 4))
+
+    screen.blit(box_surf, (box_x, box_y))
+
+
+def draw_shop_prompt(screen, player_screen_x, player_screen_y):
+    """Draw 'Shop' label + enter hint above the player's head."""
+    font_label = pygame.font.SysFont("Arial", 20, bold=True)
+    font_hint  = pygame.font.SysFont("Arial", 15)
+
+    label = font_label.render("Shop", True, (255, 255, 255))
     hint  = font_hint.render("[ Enter ]", True, (220, 220, 100))
 
     pad   = 8
@@ -290,6 +315,11 @@ def gameLoop(screen):
     if aquarium_rect is None:
         print("WARNING: No 'aquarium' object found in 'triggers' layer in Tiled map.")
 
+    # load shop trigger rect from the "triggers" object layer in Tiled
+    shop_rect = get_trigger_rect(tilemap.tmx, layer_name="triggers", object_name="shop")
+    if shop_rect is None:
+        print("WARNING: No 'shop' object found in 'triggers' layer in Tiled map.")
+
     player_x = tilemap.pixel_width  // 2
     player_y = tilemap.pixel_height // 2
     player_speed = 4
@@ -298,6 +328,7 @@ def gameLoop(screen):
     player = Player(x=tilemap.pixel_width // 2, y=tilemap.pixel_height // 2)
 
     near_aquarium = False  # tracked outside event loop so K_RETURN can read it
+    near_shop     = False  # tracked outside event loop so K_RETURN can read it
 
     while running:
         dt = clock.tick(60) / 1000.0  # Calculate delta time once per frame
@@ -327,6 +358,13 @@ def gameLoop(screen):
                 # enter aquarium when the prompt is visible
                 elif event.key == pygame.K_RETURN and near_aquarium:
                     result = aquarium_loop(screen, clock)
+                    if result == "quit":
+                        pygame.mixer.music.stop()
+                        return "quit"
+
+                # enter shop when the prompt is visible
+                elif event.key == pygame.K_RETURN and near_shop:
+                    result = shop_loop(screen, clock)
                     if result == "quit":
                         pygame.mixer.music.stop()
                         return "quit"
@@ -408,6 +446,13 @@ def gameLoop(screen):
         else:
             near_aquarium = False
 
+        # check proximity to shop trigger from Tiled
+        if shop_rect is not None:
+            dist = ((player_x - shop_rect.centerx) ** 2 + (player_y - shop_rect.centery) ** 2) ** 0.5
+            near_shop = dist < SHOP_PROXIMITY
+        else:
+            near_shop = False
+
         camera.update(player_x, player_y)
 
         screen.fill((30, 30, 30))
@@ -451,6 +496,10 @@ def gameLoop(screen):
         # draw prompt above player's head when near the aquarium
         if near_aquarium:
             draw_aquarium_prompt(screen, player_screen_x, player_screen_y)
+
+        # draw prompt above player's head when near the shop
+        if near_shop:
+            draw_shop_prompt(screen, player_screen_x, player_screen_y)
 
         inventory.draw_panel(screen, screen_w, screen_h)
         inventory.draw_selected_item_label(screen, screen_w, screen_h)
