@@ -6,7 +6,7 @@ import display
 import player
 from player import Player
 from ui import UIElement, create_surface_with_text
-from inventory import Inventory
+from models import FishInventory
 
 from fishDiffuculty import fishingStart
 
@@ -293,12 +293,7 @@ def gameLoop(screen):
     tilemap = TileMap(map_path, scale=SCALE)
     camera  = Camera(screen_w, screen_h, tilemap.pixel_width, tilemap.pixel_height)
 
-    inventory = Inventory(
-        os.path.join(here, "assets", "Sprites", "Inv_slots.png"),
-        num_slots=8,
-        visible_slot_count=5,
-        initial_items=["Rod"],
-    )
+    inventory = FishInventory.load()
 
     # Create sprite group for dynamic entities (rain, etc.)
     all_sprites = pygame.sprite.LayeredUpdates()
@@ -369,9 +364,8 @@ def gameLoop(screen):
                         pygame.mixer.music.stop()
                         return "quit"
                 else:
-                    selected_item = inventory.handle_key_event(event)
-                    if selected_item is not None or event.key in Inventory.SLOT_KEYS:
-                        print(f"Selected slot {inventory.selected_slot + 1}: {selected_item or 'Empty'}")
+                    # Inventory key events disabled - data-only backend
+                    pass
 
             # for testing        
             if event.type == pygame.KEYDOWN:
@@ -403,7 +397,7 @@ def gameLoop(screen):
                         player.is_fishing = False
                         player.set_animation("idle")
                         #rhythmGameStart()
-                        fishingStart(rain.is_raining)
+                        fishingStart(inventory, rain.is_raining)
 
         # window size might have changed (fullscreen toggle) so update
         screen_w, screen_h = screen.get_size()
@@ -501,8 +495,9 @@ def gameLoop(screen):
         if near_shop:
             draw_shop_prompt(screen, player_screen_x, player_screen_y)
 
-        inventory.draw_panel(screen, screen_w, screen_h)
-        inventory.draw_selected_item_label(screen, screen_w, screen_h)
+        # Inventory UI disabled - data-only backend
+        # inventory.draw_panel(screen, screen_w, screen_h)
+        # inventory.draw_selected_item_label(screen, screen_w, screen_h)
 
         pygame.display.flip()
 
