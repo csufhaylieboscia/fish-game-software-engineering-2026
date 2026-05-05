@@ -218,9 +218,9 @@ def killAllGameObjects():
 class ProgressBar():
     def __init__(self):
         self.x = 100
-        self.y = 100
-        self.w = 300
-        self.h = 40
+        self.y = 50
+        self.w = 250
+        self.h = 30
 
     def draw(self, surface, difObj):
         self.curr = difObj.getCurrCount()
@@ -231,8 +231,8 @@ class ProgressBar():
         if ratio == 0:
             ratio = 1/20
 
-        pygame.draw.rect(surface, (255,0,0), (self.x, self.y, self.w,self.h))
-        pygame.draw.rect(surface, (0,255,0), (self.x, self.y, self.w *ratio, self.h))
+        pygame.draw.rect(surface, (196,30,58), (self.x, self.y, self.w,self.h))
+        pygame.draw.rect(surface, (9,121,105), (self.x, self.y, self.w *ratio, self.h))
 
 class GameObject(pygame.sprite.Sprite):
     def __init__(self, color, widthScaler, heightScaler, x, y, speed, direction=1, sprite_path=None):
