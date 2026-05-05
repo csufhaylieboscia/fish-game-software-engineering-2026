@@ -6,9 +6,10 @@ from pygame import mixer
 
 from rhythm import * 
 from fish import fishObjectList, rainFishObjectList
+FishSprite_Dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "Sprites", "FishSprites")
 import aquarium
 
-def fishingStart(isRaining=False):
+def fishingStart(inventory, isRaining=False):
     if isRaining:
         # During rain: use weighted random selection for rare rain fish
         print("🌧️  RAIN FISHING: Regular fish + rare special rain fish available!")
@@ -34,7 +35,7 @@ def fishingStart(isRaining=False):
             print("🎯 RARE CATCH!")
             
         else:
-            # Common: regular fish (992/1000 chance)
+            # Common: regular fish (983/1000 chance)
             fish2catch = random.choice(fishObjectList)
             
     else:
@@ -91,6 +92,12 @@ def fishingStart(isRaining=False):
                         you_caught_it_screen(scaled_bg, fish2catch)
                         # register the caught fish so it swims in the aquarium
                         aquarium.add_caught_fish(fish2catch)
+                        # Add to player inventory backend
+                        if inventory.add_fish(fish2catch.getName(), fish2catch.getDifficulty()):
+                            print(f"✅ Added {fish2catch.getName()} to inventory!")
+                            inventory.save()
+                        else:
+                            print("❌ Inventory full!")
                     if result == 2:
                         killAllGameObjects()
                         run = False
