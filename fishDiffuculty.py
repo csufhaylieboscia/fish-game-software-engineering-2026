@@ -79,7 +79,7 @@ def fishingStart(isRaining=False):
                     run = False
                 elif event.key == pygame.K_SPACE:
                     print("Space was pressed!")
-                    result = spacePressed(barList)
+                    result = spacePressed(barList, diffcultyObject)
                     if result == 0:
                         mixer.music.play()
                         print("display fish")
@@ -89,7 +89,9 @@ def fishingStart(isRaining=False):
                         you_caught_it_screen(scaled_bg, fish2catch)
                         # register the caught fish so it swims in the aquarium
                         aquarium.add_caught_fish(fish2catch)
-
+                    if result == 2:
+                        killAllGameObjects()
+                        run = False
         if run_background == run_background_time:
             run_background = 0
             bg_index = runBackgroundAnimation(bg_index, scaled_bg)
@@ -160,8 +162,19 @@ class DifficultyMethod():
     def getHitsNeeded(self):
         return self.hitNeed
     
-    def getHitCount(self):
+    def getCurrCount(self):
         return self.hitCount
+    
+    def plusCurrCount(self):
+        self.hitCount += 1
+    
+    def subCurrCount(self):
+        if (self.hitCount <= 0):
+            return False
+        else:
+            self.hitCount -= 1
+            return True
+
 
 def initializeRhythmBar(difObject):
     outOfBounds = GameObject(NAVY, 7/8, 25/600, 50, 510, 0)
@@ -172,17 +185,28 @@ def initializeRhythmBar(difObject):
     allObjectsList.add(target)
     allObjectsList.add(slider)
 
-def spacePressed(barList):
+def spacePressed(barList, difObject):
     outOfBounds = barList[0]
     target   = barList[1]
     slider   = barList[2]
 
     if pygame.sprite.collide_rect(target, slider):
         print("Target was hit!")
-        return 0
+        difObject.plusCurrCount()
+        if (difObject.getCurrCount() >= difObject.getHitsNeeded()):
+            print("Goal Reached! Fish is caught")
+            return 0
+        else:
+            print("Keep going fishin!")
+            return 1
     elif pygame.sprite.collide_rect(outOfBounds, slider):
-        print("outside of range! Try again")
-        return 1
+        if(difObject.subCurrCount()):
+            print("outside of range! Rod Breaking! Try again")
+            return 1
+        else: 
+            print("Fish Not Caught. No more tries")
+            return 2
+        
 
 def killAllGameObjects():
     for obj in allObjectsList:

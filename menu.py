@@ -3,7 +3,6 @@ from enum import Enum
 import os
 from game import gameLoop
 from ui import create_surface_with_text, UIElement
-import display
 
 Base_Dir = os.path.dirname(os.path.abspath(__file__))
 Assets_Dir = os.path.join(Base_Dir, "assets")
@@ -84,10 +83,6 @@ class ParallaxLayer:
             self.size_w = size_w
             self.size_h = size_h
             self._rescale(size_w, size_h)
-
-class GameState(Enum):
-   QUIT = -1
-   START = 1
 
 def main_menu_loop(screen, clock):
     pygame.mixer.init() # MOVED THIS - cali
