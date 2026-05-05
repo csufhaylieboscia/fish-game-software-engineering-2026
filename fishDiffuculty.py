@@ -49,6 +49,8 @@ def fishingStart(isRaining=False):
 
     barList  = allObjectsList.sprites()
 
+    progressBar = ProgressBar()
+
     FPS = 60
     run_background_time = 15
     run_slider_time = 3
@@ -98,6 +100,7 @@ def fishingStart(isRaining=False):
 
         surface.blit(scaled_bg[bg_index], (0, 0))
         allObjectsList.draw(surface)
+        progressBar.draw(surface, diffcultyObject)
         if run_slider == run_slider_time:
             run_slider = 0
             barList[1].update()
@@ -122,8 +125,8 @@ class DifficultyMethod():
             self.sliderSpeed = 12
             self.targetSpeed = 0
 
-            self.hitNeed = 1
-            self.hitCount = 0
+            self.hitNeed = 2
+            self.hitCount = 1
 
      
         elif (self.level == 2):
@@ -131,24 +134,24 @@ class DifficultyMethod():
             self.sliderSpeed = 17
             self.targetSpeed = 0
 
-            self.hitNeed = 2
-            self.hitCount = 0
+            self.hitNeed = 3
+            self.hitCount = 1
 
         elif (self.level == 3):
             self.targetScale = 25/800
             self.sliderSpeed = 17
             self.targetSpeed = 5
 
-            self.hitNeed = 2
-            self.hitCount = 0
+            self.hitNeed = 3
+            self.hitCount = 1
 
         elif (self.level == 4):
             self.targetScale = 15/800
             self.sliderSpeed = 20
             self.targetSpeed = 5
 
-            self.hitNeed = 3
-            self.hitCount = 0
+            self.hitNeed = 4
+            self.hitCount = 1
     
     def getTargetScale(self):
         return self.targetScale
@@ -211,6 +214,25 @@ def spacePressed(barList, difObject):
 def killAllGameObjects():
     for obj in allObjectsList:
         obj.kill()
+
+class ProgressBar():
+    def __init__(self):
+        self.x = 100
+        self.y = 100
+        self.w = 300
+        self.h = 40
+
+    def draw(self, surface, difObj):
+        self.curr = difObj.getCurrCount()
+        self.max = difObj.getHitsNeeded()
+
+        ratio = self.curr/self.max
+
+        if ratio == 0:
+            ratio = 1/20
+
+        pygame.draw.rect(surface, (255,0,0), (self.x, self.y, self.w,self.h))
+        pygame.draw.rect(surface, (0,255,0), (self.x, self.y, self.w *ratio, self.h))
 
 class GameObject(pygame.sprite.Sprite):
     def __init__(self, color, widthScaler, heightScaler, x, y, speed, direction=1, sprite_path=None):
