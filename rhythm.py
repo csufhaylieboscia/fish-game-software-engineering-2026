@@ -22,7 +22,6 @@ caught_fish_sound = os.path.join(Assets_Dir, "MUSIC/SoundEffects/getItemLOZ.mp3"
 surface = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 allObjectsList = pygame.sprite.Group()
 
-
 # Sparkle class for the celebration screen
 class Sparkle:
     def __init__(self):
@@ -167,6 +166,22 @@ def you_caught_it_screen(scaled_bg, fish):
 
         # Draw Fish image 
         fish.displayFish(surface, SCREEN_WIDTH, SCREEN_HEIGHT)
+
+        #Display fish name 
+        #fish name shadow
+        fish_font = pygame.font.SysFont("Arial", font_size, bold=True)
+        fishshadow_surf = shadow_font.render(fish.getName(), True, (160, 60, 0))
+        fish_surf   = font.render(fish.getName(), True, text_color)
+
+        fx, fy = SCREEN_WIDTH // 2, 450
+
+        # Draw shadow offset slightly
+        fishshadow_rect = fishshadow_surf.get_rect(center=(fx + 3, fy + 3))
+        surface.blit(fishshadow_surf, fishshadow_rect)
+
+        # Draw main text
+        fish_rect = fish_surf.get_rect(center=(fx, fy))
+        surface.blit(fish_surf, fish_rect)
 
         # 'press space' hint with a gentle fade in/out
         hint_alpha = int(180 + 75 * math.sin(timer * 3))
