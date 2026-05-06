@@ -23,19 +23,19 @@ When a player initiates a cast, a timing-based minigame is launched. A slider mo
 Each fish is assigned a difficulty rating from 1 to 4. Higher difficulty fish have smaller target zones, faster sliders, and require more successful hits before the fish is landed. A progress bar on screen tracks the player's current number of hits toward the required total.
 
 ### Fish and Rarity — `fish.py`, `fishDiffuculty.py`
-The game includes a roster of standard fish available under normal conditions, as well as a set of rare, special fish that can only be encountered during rain. Rain fish are assigned weighted probabilities ranging from ultra-rare (1 in 1,000) to rare (1 in 200), making certain catches a meaningful achievement.
+The game includes a roster of standard fish available under normal conditions, as well as a set of rare, special fish that can only be encountered during rain. Rain fish are assigned weighted probabilities ranging from ultra-rare (1 in 1,000) to rare (1 in 200).
 
 ### Weather and Rain System — `sky.py`, `weather_sprites.py`
 A dynamic weather cycle runs in the background during gameplay. Rain periods last three minutes and occur at randomized intervals, with visual rain drop sprites rendered across the map. The active weather state directly influences which fish are available for the player to catch.
 
 ### Player and Walkable Areas — `player.py`
-The player character navigates a tiled overworld using keyboard input. The character supports idle, run, and fishing animations loaded from sprite sheets, and correctly mirrors sprites based on the direction of movement. Collision and hitbox logic restricts movement to valid walkable areas defined by the tilemap.
+The player character navigates an overworld using keyboard input. The character supports idle, run, and fishing animations for the respective activities. The overworld acts as the main hub for the player allowing them to navigate to the shop or aquarium and fish at any bodies of water.
 
 ### Aquarium — `aquarium.py`
-Upon catching a fish, it is registered in the player's aquarium. The aquarium screen renders all collected fish as animated swimming sprites against a layered underwater background complete with light shafts, bubbles, and animated seaweed. Fish swim back and forth across the screen and bob vertically using sine-wave motion.
+Upon catching a fish, it is registered in the player's aquarium. The aquarium screen renders all collected fish as animated swimming sprites against a layered underwater background complete with light shafts, bubbles, and animated seaweed.
 
 ### Shop — `shop.py`
-An in-game shop allows players to spend earned currency on items and upgrades.
+An in-game shop allows players to sell fish and spend earned currency on items.
 
 ### Inventory and Saving — `models.py`, `inventory.py`
 Caught fish are tracked in a persistent inventory stored as a JSON file (`player_fish.json`). The inventory records the name, rarity, and count of each species the player has caught and is automatically saved and loaded between sessions.
