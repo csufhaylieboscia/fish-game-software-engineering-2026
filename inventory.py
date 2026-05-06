@@ -5,22 +5,6 @@ from typing import Optional
 
 SLOT_KEYS = [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8]
 
-# Disabled: Legacy UI wrapper no longer needed (simple FishInventory in models.py)
-# class InventoryUI:
-#     """Frontend UI for inventory slots. Wraps backend Inventory."""
-#     def __init__(self, slot_img_path: str, num_slots: int = 8, visible_slot_count: int = 5, initial_items: list = None):
-#         here = os.path.dirname(os.path.abspath(__file__))
-#         self.slot_img_path = os.path.join(here, slot_img_path) if not os.path.isabs(slot_img_path) else slot_img_path
-#         
-#         self.backend = Inventory.load()  # auto-load on init
-#         self.num_slots = num_slots
-#         self.visible_slots = visible_slot_count
-#         self.slot_img = pygame.image.load(self.slot_img_path).convert_alpha()
-#         self.slot_width, self.slot_height = 48, 48  # assume slot sprite size
-#         self.panel_width = self.slot_width * self.visible_slots + 20
-#         self.panel_height = self.slot_height + 40
-#         self.selected_slot = 0
-
 def handle_key_event(self, event) -> Optional[str]:
         """Handle slot select keys (1-8), return selected item name or None."""
         if event.type == pygame.KEYDOWN:

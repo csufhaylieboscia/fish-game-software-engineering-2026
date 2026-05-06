@@ -12,7 +12,7 @@ import aquarium
 def fishingStart(inventory, isRaining=False):
     if isRaining:
         # During rain: use weighted random selection for rare rain fish
-        print("🌧️  RAIN FISHING: Regular fish + rare special rain fish available!")
+        print("RAIN FISHING: Regular fish + rare special rain fish available!")
         
         # First, small chance to get a rare rain fish
         rare_roll = random.randint(1, 1000)
@@ -20,19 +20,19 @@ def fishingStart(inventory, isRaining=False):
         if rare_roll == 1:
             # Ultra rare: uhh.png (1/1000)
             fish2catch = rainFishObjectList[5]  # uhh.png
-            print("🌟 ULTRA RARE CATCH!")
+            print("ULTRA RARE CATCH!")
             
         elif rare_roll <= 7:  # Numbers 2-7 (6 slots for 3 fish at 1/500 each)
             # Very rare: Cal, Hay, Noc (1/500 each)
             very_rare_fish = [rainFishObjectList[0], rainFishObjectList[1], rainFishObjectList[2]]  # Cal, Hay, Noc
             fish2catch = random.choice(very_rare_fish)
-            print("💎 VERY RARE CATCH!")
+            print("VERY RARE CATCH!")
             
         elif rare_roll <= 17:  # Numbers 8-17 (10 slots for 2 fish at 1/200 each)
             # Rare: jelly, angler (1/200 each)
             rare_fish = [rainFishObjectList[4], rainFishObjectList[3]]  # jelly, angler
             fish2catch = random.choice(rare_fish)
-            print("🎯 RARE CATCH!")
+            print("RARE CATCH!")
             
         else:
             # Common: regular fish (983/1000 chance)
@@ -40,10 +40,10 @@ def fishingStart(inventory, isRaining=False):
             
     else:
         # During normal weather: only regular fish
-        print("☀️  NORMAL FISHING: Regular fish available")
+        print("NORMAL FISHING: Regular fish available")
         fish2catch = random.choice(fishObjectList)
     
-    print(f"🎣 Attempting to catch: {fish2catch.getName()}")
+    print(f"Attempting to catch: {fish2catch.getName()}")
     diffcultyObject = DifficultyMethod(fish2catch.getDifficulty())
 
     initializeRhythmBar(diffcultyObject)
@@ -92,10 +92,10 @@ def fishingStart(inventory, isRaining=False):
                         aquarium.add_caught_fish(fish2catch)
                         # Add to player inventory backend
                         if inventory.add_fish(fish2catch.getName(), fish2catch.getDifficulty()):
-                            print(f"✅ Added {fish2catch.getName()} to inventory!")
+                            print(f"Added {fish2catch.getName()} to inventory!")
                             inventory.save()
                         else:
-                            print("❌ Inventory full!")
+                            print("Inventory full!")
 
         if run_background == run_background_time:
             run_background = 0
