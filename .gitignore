@@ -1,4 +1,4 @@
-requirements.txt
+player_fish.json
 
 # Edited .gitignore to ignore virtual environment and Python cache files
 venv/

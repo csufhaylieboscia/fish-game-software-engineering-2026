@@ -6,6 +6,7 @@ from pygame import mixer
 
 from rhythm import * 
 from fish import fishObjectList, rainFishObjectList
+Sprites_Dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "Sprites")
 FishSprite_Dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "Sprites", "FishSprites")
 import aquarium
 
@@ -50,6 +51,8 @@ def fishingStart(inventory, isRaining=False):
 
     barList  = allObjectsList.sprites()
 
+    progressBar = ProgressBar()
+
     FPS = 60
     run_background_time = 15
     run_slider_time = 3
@@ -80,7 +83,7 @@ def fishingStart(inventory, isRaining=False):
                     run = False
                 elif event.key == pygame.K_SPACE:
                     print("Space was pressed!")
-                    result = spacePressed(barList)
+                    result = spacePressed(barList, diffcultyObject)
                     if result == 0:
                         mixer.music.play()
                         print("display fish")
@@ -95,14 +98,22 @@ def fishingStart(inventory, isRaining=False):
                             print(f"Added {fish2catch.getName()} to inventory!")
                             inventory.save()
                         else:
+<<<<<<< HEAD
                             print("Inventory full!")
 
+=======
+                            print("❌ Inventory full!")
+                    if result == 2:
+                        killAllGameObjects()
+                        run = False
+>>>>>>> 6427e81a99062c827010722b1929361bfdd547b6
         if run_background == run_background_time:
             run_background = 0
             bg_index = runBackgroundAnimation(bg_index, scaled_bg)
 
         surface.blit(scaled_bg[bg_index], (0, 0))
         allObjectsList.draw(surface)
+        progressBar.draw(surface, diffcultyObject)
         if run_slider == run_slider_time:
             run_slider = 0
             barList[1].update()
@@ -127,8 +138,8 @@ class DifficultyMethod():
             self.sliderSpeed = 12
             self.targetSpeed = 0
 
-            self.hitNeed = 1
-            self.hitCount = 0
+            self.hitNeed = 2
+            self.hitCount = 1
 
      
         elif (self.level == 2):
@@ -136,24 +147,24 @@ class DifficultyMethod():
             self.sliderSpeed = 17
             self.targetSpeed = 0
 
-            self.hitNeed = 2
-            self.hitCount = 0
+            self.hitNeed = 3
+            self.hitCount = 1
 
         elif (self.level == 3):
             self.targetScale = 25/800
             self.sliderSpeed = 17
             self.targetSpeed = 5
 
-            self.hitNeed = 2
-            self.hitCount = 0
+            self.hitNeed = 3
+            self.hitCount = 1
 
         elif (self.level == 4):
             self.targetScale = 15/800
             self.sliderSpeed = 20
             self.targetSpeed = 5
 
-            self.hitNeed = 3
-            self.hitCount = 0
+            self.hitNeed = 4
+            self.hitCount = 1
     
     def getTargetScale(self):
         return self.targetScale
@@ -167,8 +178,19 @@ class DifficultyMethod():
     def getHitsNeeded(self):
         return self.hitNeed
     
-    def getHitCount(self):
+    def getCurrCount(self):
         return self.hitCount
+    
+    def plusCurrCount(self):
+        self.hitCount += 1
+    
+    def subCurrCount(self):
+        if (self.hitCount <= 0):
+            return False
+        else:
+            self.hitCount -= 1
+            return True
+
 
 def initializeRhythmBar(difObject):
     outOfBounds = GameObject(NAVY, 7/8, 25/600, 50, 510, 0)
@@ -179,21 +201,66 @@ def initializeRhythmBar(difObject):
     allObjectsList.add(target)
     allObjectsList.add(slider)
 
-def spacePressed(barList):
+def spacePressed(barList, difObject):
     outOfBounds = barList[0]
     target   = barList[1]
     slider   = barList[2]
 
     if pygame.sprite.collide_rect(target, slider):
         print("Target was hit!")
-        return 0
+        difObject.plusCurrCount()
+        if (difObject.getCurrCount() >= difObject.getHitsNeeded()):
+            print("Goal Reached! Fish is caught")
+            return 0
+        else:
+            print("Keep going fishin!")
+            return 1
     elif pygame.sprite.collide_rect(outOfBounds, slider):
-        print("outside of range! Try again")
-        return 1
+        if(difObject.subCurrCount()):
+            print("outside of range! Rod Breaking! Try again")
+            return 1
+        else: 
+            print("Fish Not Caught. No more tries")
+            return 2
+        
 
 def killAllGameObjects():
     for obj in allObjectsList:
         obj.kill()
+
+class ProgressBar():
+    def __init__(self):
+        self.x = 100
+        self.y = 50
+        self.w = 250
+        self.h = 30
+
+        bar_image_path = os.path.join(Sprites_Dir, "progress_bar.png")
+        self.image = pygame.image.load(bar_image_path).convert_alpha()
+
+        self.rect = self.image.get_rect()
+
+        tw, th = self.image.get_size()
+        ratio = tw / th
+        self.image = pygame.transform.scale(self.image, (360 * ratio, 360*ratio))
+
+        
+        self.rect.x = 55
+        self.rect.y = -82
+        
+
+    def draw(self, surface, difObj):
+        self.curr = difObj.getCurrCount()
+        self.max = difObj.getHitsNeeded()
+
+        ratio = self.curr/self.max
+
+        if ratio == 0:
+            ratio = 1/20
+
+        surface.blit(self.image, self.rect)
+        pygame.draw.rect(surface, (232,49,69), (self.x, self.y, self.w,self.h), border_radius=5)
+        pygame.draw.rect(surface, (95,193,76), (self.x, self.y, self.w *ratio, self.h), border_radius=5)
 
 class GameObject(pygame.sprite.Sprite):
     def __init__(self, color, widthScaler, heightScaler, x, y, speed, direction=1, sprite_path=None):
