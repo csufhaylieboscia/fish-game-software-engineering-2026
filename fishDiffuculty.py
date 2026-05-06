@@ -6,6 +6,7 @@ from pygame import mixer
 
 from rhythm import * 
 from fish import fishObjectList, rainFishObjectList
+Sprites_Dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "Sprites")
 FishSprite_Dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "Sprites", "FishSprites")
 import aquarium
 
@@ -229,6 +230,20 @@ class ProgressBar():
         self.w = 250
         self.h = 30
 
+        bar_image_path = os.path.join(Sprites_Dir, "progress_bar.png")
+        self.image = pygame.image.load(bar_image_path).convert_alpha()
+
+        self.rect = self.image.get_rect()
+
+        tw, th = self.image.get_size()
+        ratio = tw / th
+        self.image = pygame.transform.scale(self.image, (360 * ratio, 360*ratio))
+
+        
+        self.rect.x = 55
+        self.rect.y = -82
+        
+
     def draw(self, surface, difObj):
         self.curr = difObj.getCurrCount()
         self.max = difObj.getHitsNeeded()
@@ -238,8 +253,9 @@ class ProgressBar():
         if ratio == 0:
             ratio = 1/20
 
-        pygame.draw.rect(surface, (196,30,58), (self.x, self.y, self.w,self.h))
-        pygame.draw.rect(surface, (9,121,105), (self.x, self.y, self.w *ratio, self.h))
+        surface.blit(self.image, self.rect)
+        pygame.draw.rect(surface, (232,49,69), (self.x, self.y, self.w,self.h), border_radius=5)
+        pygame.draw.rect(surface, (95,193,76), (self.x, self.y, self.w *ratio, self.h), border_radius=5)
 
 class GameObject(pygame.sprite.Sprite):
     def __init__(self, color, widthScaler, heightScaler, x, y, speed, direction=1, sprite_path=None):
