@@ -1,10 +1,9 @@
 {
   "fish_counts": {
-    "axolotl": 1,
-    "octopus": 1,
-    "greenfish": 2,
+    "octopus": 0,
     "pirahna": 0,
     "goldfish": 0,
+    "greenfish": 0,
     "flatfish": 0,
     "mossball": 0,
     "sea snail": 0,
@@ -16,6 +15,7 @@
     "plasticbag": 0,
     "Cal": 0,
     "Jelly": 0,
+    "axolotl": 0,
     "Starfish": 0,
     "Hay": 0,
     "Uhh": 0,
